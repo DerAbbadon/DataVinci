@@ -1,0 +1,59 @@
+Plan:
+First two months reproducibility (small parts)
+Next two months own Ideas
+Last two months Experiments and Thesis
+
+Ask questions to Microsoft
+Fatemeh creates Server account, sends synthezised DataSet
+Use python, LLMs: Mystral, Llama2
+scikit learn for decision trees
+
+Parts of the System:
+Pattern Learner
+Repair System
+Ranker
+
+Set threshhold to 10%
+
+Weekly Meetings with Fatemeh
+Monthly Meetings with Ziawasch
+
+https://filezilla-project.org
+https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server
+
+Pattern Learner: https://docs.python.org/3/library/re.html
+
+If you are interested in using several LLMs with a unified endpoint but without the annoying auth or model switch steps, this GitHub repo might be a life saver. 
+https://github.com/ollama/ollama
+Pros: 
+ - Unified endpoint(s)
+ - Smooth switch of different models by just editing the HTTPRequest body
+ - Speed OK (automatically enabled GPU acceleration)
+ - Multimodal included with the same smooth calling method
+Cons:
+ - Limited number of models, yet sufficient for basic usage (e.g. there's no MiniCPM or some other specific models)
+ - Not know if the models are always up to date
+ - Didn't find any info about fine-tune support
+It is now deployed on Lyra. The API endpoint is http://lyra.dbs.uni-hannover.de:11434/api/??? (??? = generate/embedding/other mentioned in the doc). LLaMA2 (speed ok-ish) and Mistral (somehow slower than LLAMA) are already downloaded and ready to use. There is no Web interface for now.
+
+https://huggingface.co/ for fine tuning maybe ?!?
+
+https://www.promptingguide.ai/de
+https://arxiv.org/pdf/2310.09263
+
+"Ind-674-PRO",
+      "US-823-JUN",
+      "US-238-JUN",
+      "QUAL-47",
+      "QUAL-21",
+      "Zim-843-PRO",
+      "Eng-781-JUN",
+      "Aus-664-PRO",
+      "QUAL-88",
+      "Ind-473-JUN",
+      "usa_837",
+      "Eng-573-JUN",
+      "Zim-392-PRO",
+      "QUAL-10",
+	  
+cd Users/Jonas_Hoppe/Uni/Master_Informatik/MasterArbeit/DataVinci	  
