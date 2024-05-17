@@ -41,9 +41,11 @@ def main():
       "A2.A3.A4."
       "A2.A4.A6."
    ]
+   patterns = ["^QUAL-[0-9]{2}$", "^[A-Z][a-z]+-[0-9]{3}-[A-Z]{3}$", "^A[0-9]\.A[0-9]\.A[0-9]\.$", "^A[0-9]\.A[0-9]\.$"]
    #db = db.iloc[:,[4]]
    #DataVinci(db)
-   patterns = getPatterns(examples)
+   #patterns = getPatterns(examples)
+   print(patterns)
    pattern = str(patterns[1])
    Dags = generateDAG(pattern[::-1],"usa_837")
    print(Dags)
