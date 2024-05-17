@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Acceptance.ExcelAcceptance.ModelInput">
+            <summary>
+                model input class for ExcelAcceptance.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Acceptance.ExcelAcceptance.ModelOutput">
+            <summary>
+                model output class for ExcelAcceptance.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Acceptance.ExcelAcceptance.Predict(Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Acceptance.ExcelAcceptance.ModelInput)">
+            <summary>
+                Use this method to predict on <see cref="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Acceptance.ExcelAcceptance.ModelInput" />.
+            </summary>
+            <param name="input">model input.</param>
+            <returns>
+                <seealso cref="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Acceptance.ExcelAcceptance.ModelOutput" />
+            </returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Precision.ExcelPrecision.ModelInput">
+            <summary>
+                model input class for ExcelPrecision.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Precision.ExcelPrecision.ModelOutput">
+            <summary>
+                model output class for ExcelPrecision.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Precision.ExcelPrecision.Predict(Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Precision.ExcelPrecision.ModelInput)">
+            <summary>
+                Use this method to predict on <see cref="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Precision.ExcelPrecision.ModelInput" />.
+            </summary>
+            <param name="input">model input.</param>
+            <returns>
+                <seealso cref="T:Microsoft.ProgramSynthesis.Transformation.Formula.MachineLearning.Excel.Precision.ExcelPrecision.ModelOutput" />
+            </returns>
+        </member>
+    </members>
+</doc>

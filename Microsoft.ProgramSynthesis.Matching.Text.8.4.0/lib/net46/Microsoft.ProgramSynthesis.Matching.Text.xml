@@ -1,0 +1,1896 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.ProgramSynthesis.Matching.Text</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.AllowedTokens`2">
+            <summary>
+                A constraint that allows the learner to use additional <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.AllowedTokens`2.Tokens" />s.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.AllowedTokens`2.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <summary>Indicates whether the current constraint is equal to another constraint.</summary>
+            <param name="other">A constraint to compare with this constraint.</param>
+            <returns>true if the current constraint is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.AllowedTokens`2.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <summary>
+                Checks if these constraints are obviously not valid together. That is, just by considering this and
+                <paramref name="other" /> it is easy to tell that no program could possibly satisfy both of them. For instance, the
+                two constraints could be examples that give different outputs.
+            </summary>
+            <param name="other">The constraint to check for conflicts.</param>
+            <returns>
+                True if the conjunction of the specifications of this constraint and <paramref name="other" /> is
+                <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.AllowedTokens`2.Valid(Microsoft.ProgramSynthesis.Program{`0,`1})">
+            <summary>
+                Validate a program against this constraint.
+            </summary>
+            <param name="program">The program that needs to validate.</param>
+            <returns>The validation result.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.AllowedTokens`2.GetHashCode">
+            <summary>Serves as the default hash function. </summary>
+            <returns>A hash code for the current object.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3">
+            <summary>
+                A constraint that specifies that some clustering constraint on inputs.
+            </summary>
+            <typeparam name="TImpl">Type of the implementation.</typeparam>
+            <typeparam name="TInput">Type of the input.</typeparam>
+            <typeparam name="TOutput">Type of the output.</typeparam>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.Inputs">
+            <summary>
+                The inputs that are constrained to be in the same cluster.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.#ctor(System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+                Create a cluster constraint with the given inputs.
+            </summary>
+            <param name="inputs">The inputs that will be constrained to be in the same cluster.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`1,`2})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.Equals(`0)">
+            <summary>
+                Compare equality with another TImpl.
+            </summary>
+            <param name="other">Other TImp constraint to compare against.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`1,`2})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusterConstraint`3.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.InSameCluster">
+            <summary>
+                A constraint that specifies that some inputs should be matched into the same cluster.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InSameCluster.#ctor(System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+                Create a InSameCluster constraint with the given inputs.
+            </summary>
+            <param name="inputs">The inputs that will be constrained to be in the same cluster.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InSameCluster.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InSameCluster.Valid(Microsoft.ProgramSynthesis.Program{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InSameCluster.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.InDifferentCluster">
+            <summary>
+                A constraint that specifies that some inputs should be matched into different clusters, i.e.,
+                no two inputs in the specified set should share a cluster.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InDifferentCluster.#ctor(System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+                Create a InDifferentCluster constraint with the given inputs.
+            </summary>
+            <param name="inputs">The inputs that will be constrained to be in different clusters.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InDifferentCluster.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InDifferentCluster.Valid(Microsoft.ProgramSynthesis.Program{System.String,System.Boolean})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.InDifferentCluster.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.ClusteringMethod`2">
+            <summary>
+                A constraint specifying which clustering method to use during disjunction learning
+                Options are from the <value>ClusteringAlgorithm</value> enum.
+                a) AHC: Use agglomerative hierarchical clustering
+                b) Sampling: Use sampling + set cover based clustering
+                c) None: Don't use any clustering; Just return one cluster
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2">
+            <summary>
+                Changes parameters of the algorithm to allow for experimentation. The parameters this constraint sets may change or
+                be removed in future versions.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.SampleSizeFactor">
+            <summary>
+                <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.SampleSizeFactor" /> times the "max expected clusters" is the number of elements fed into the
+                <see cref="T:Microsoft.ProgramSynthesis.Utils.Clustering.AgglomerativeHierarchicalClustering`1" /> algorithm at one time. Default is 2.5.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.ThetaFactor">
+            <summary>
+                Determines how many distances the clustering algorithm should compute exactly.
+                <see cref="P:Microsoft.ProgramSynthesis.Utils.Clustering.AgglomerativeHierarchicalClustering`1.ThetaFactor" />. Default is 1.5.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.Valid(Microsoft.ProgramSynthesis.Program{`0,`1})">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.ClusteringParameters`2.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2">
+            <summary>
+                A constraint on the number of disjunctions expected in the matching program.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.IsSoft">
+            <summary>
+                Matching.Text does not currently support a hard disjunctions limit, so this is always <c>true</c> as this
+                constraint may not be respected in all cases.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.DefaultCategoricalLimit">
+            <summary>
+                The default limits on number of disjuncts for categorical variables.
+                Categorical variables have values over a very small range (relative to the size of the data).
+                When clustered in a hierarchy, the valued would be grouped into few singleton clusters,
+                so we can safely set a higher upper bound on the number of disjuncts, without over-splitting.
+                Some examples of categorical values: Gender, Month/Day names, Booleans etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.DefaultQuantitativeLimit">
+            <summary>
+                The default limits on number of disjuncts for quantitative variables.
+                Quantitative variables have values over a much larger range, and we would like to group them
+                together into a relatively small number of clusters - highlighting the differences in patterns
+                at a coarser granularity. Setting a higher upper bound on the number of disjuncts may result
+                in over-splitting of the clusters.
+                Some examples of categorical values: Income, Score, Names, Phone numbers etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.MinDisjuncts">
+            <summary>
+                Minimum number of disjuncts.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.MaxDisjuncts">
+            <summary>
+                Maximum number of disjuncts.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <summary>
+                Set the options defined by this constraint in <paramref name="options" />.
+            </summary>
+            <param name="options">The <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options" /> object to mutate.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <summary>Indicates whether the current constraint is equal to another constraint.</summary>
+            <param name="other">A constraint to compare with this constraint.</param>
+            <returns>true if the current constraint is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <summary>
+                Checks if these constraints are obviously not valid together. That is, just by considering this and
+                <paramref name="other" /> it is easy to tell that no program could possibly satisfy both of them. For instance, the
+                two constraints could be examples that give different outputs.
+            </summary>
+            <param name="other">The constraint to check for conflicts.</param>
+            <returns>
+                True if the conjunction of the specifications of this constraint and <paramref name="other" /> is
+                <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.Valid(Microsoft.ProgramSynthesis.Program{`0,`1})">
+            <summary>
+                Validate a program against this constraint.
+            </summary>
+            <param name="program">The program that needs to validate.</param>
+            <returns>The validation result.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2.GetHashCode">
+            <summary>Serves as the default hash function. </summary>
+            <returns>A hash code for the current object.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2">
+            <summary>
+                Include outlier patterns in the returned program. This may produce some low
+                quality patterns. Further, it makes it more likely that we have overlapping patterns.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2.Instance">
+            <summary>
+                Singleton instance of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2" />
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2.Valid(Microsoft.ProgramSynthesis.Program{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.IncludeOutlierPatterns`2.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2">
+            <summary>
+                Use the long constants optimization which aggressively generates constant tokens whenever possible.
+                Note: this makes the learning incompelete.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2.Instance">
+            <summary>
+                Singleton instance of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2" />
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2.Valid(Microsoft.ProgramSynthesis.Program{`0,`1})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Constraints.UseLongConstantOptimization`2.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2">
+            <summary>
+                A constraint on the fraction of outliers allowed for the matching program.
+                So, the program may return clusters that do not match the given fraction
+                of outliers.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.MaxOutlierRate">
+            <summary>
+               Fraction of outliers (non-matched elements) allowed for the program.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.#ctor(System.Double)">
+            <summary>
+               Standard constructor setting the outlier rate. Throws an
+               <exception cref="T:System.ArgumentException">exception</exception> if the outlier
+               rate is outside the [0.0, 1.0] range.
+            </summary>
+            <param name="maxOutlierRate">Fraction of allowed outliers</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.ConflictsWith(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <summary>
+               Conflict only if some other outlier rate is specified.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.Equals(Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`0,`1})">
+            <summary>
+               Equal if equal outlier rate.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.Equals(Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit{`0,`1})">
+            <summary>
+               Equal if other object is an OutlierLimit and has equal outlier rate.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.SetOptions(Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options)">
+            <summary>
+               Set the MaxOutlierRate of the <paramref name="options" /> to
+               the outlier rate.
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.OutlierLimit`2.Valid(Microsoft.ProgramSynthesis.Program{`0,`1})">
+            <summary>
+                Returns true.
+            </summary>
+            <param name="program"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Learner">
+            <summary>
+                The program learning class for text matching DSL.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learner.Instance">
+            <summary>
+                The singleton instance of this class with the default score feature.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learner.ScoreFeature">
+            <inheritdoc />
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learner.DisjunctsFeature">
+            <summary>
+                The <see cref="T:Microsoft.ProgramSynthesis.Features.FeatureInfo" /> for extracting individual disjuncts.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learner.LabelFeature">
+            <summary>
+                The <see cref="T:Microsoft.ProgramSynthesis.Features.FeatureInfo" /> for labelleling a program node with descriptions of disjuncts.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learner.DecideDisjunctionsLimit(Microsoft.ProgramSynthesis.Specifications.GroupedExamplesSpec,Microsoft.ProgramSynthesis.Matching.Text.ClusteringMethod{System.String,System.Boolean})">
+            <summary>
+                Check and set the default limits on number of disjuncts for possibly categorical variables.
+                Categorical variables have values over a very small range (relative to the size of the data).
+                When clustered in a hierarchy, the valued would be grouped into few singleton clusters,
+                so we can safely set a higher upper bound on the number of disjuncts, without over-splitting.
+            </summary>
+            <param name="spec"></param>
+            <returns>
+                A <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.DisjunctionsLimit`2" /> object.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learner.LearnImpl(System.Collections.Generic.IEnumerable{Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{System.String,System.Boolean}},System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Utils.Clustering.Cluster{Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match}}@,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+                Learn a <see cref="T:Microsoft.ProgramSynthesis.VersionSpace.ProgramSet" /> of all programs satisfying the training constraints.
+            </summary>
+            <param name="constraints">The set of constraints.</param>
+            <param name="clusters">An output parameter that contains the clusters that were learned.</param>
+            <param name="k">The number of top programs or null for all programs.</param>
+            <param name="cancel">
+                The token to monitor for cancellation requests. The default value is
+                <see cref="P:System.Threading.CancellationToken.None" />.
+            </param>
+            <returns>
+                All programs satisfying the training examples (or the best <paramref name="k" />
+                if <paramref name="k" /> is not null).
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learner.LearnAll(System.Collections.Generic.IEnumerable{Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{System.String,System.Boolean}},System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <summary>
+                Learns all programs from the given positive and negative examples.
+            </summary>
+            <param name="constraints">The examples.</param>
+            <param name="additionalInputs">
+                The set of additional references that do not have output examples, which helps learn
+                programs.
+            </param>
+            <param name="cancel">
+                The token to monitor for cancellation requests. The default value is
+                <see cref="P:System.Threading.CancellationToken.None" />.
+            </param>
+            <returns>The set of all programs consistent with the examples.</returns>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Loader.Instance">
+            <summary>
+                The singleton instance of this class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Loader.Load(System.String,Microsoft.ProgramSynthesis.AST.ASTSerializationFormat,Microsoft.ProgramSynthesis.AST.DeserializationContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Loader.Load(System.String,Microsoft.ProgramSynthesis.AST.ASTSerializationFormat,Microsoft.ProgramSynthesis.AST.DeserializationContext,Microsoft.ProgramSynthesis.AST.ProgramNodeParser)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Loader.Create(Microsoft.ProgramSynthesis.AST.ProgramNode)">
+            <summary>
+                Creates a <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Program" /> for a <see cref="T:Microsoft.ProgramSynthesis.AST.ProgramNode" />. <paramref name="program" /> must be a
+                valid program for a <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Program" />.
+            </summary>
+            <param name="program">The code of the program.</param>
+            <returns>A strongly-typed <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Program" /> object wrapping <paramref name="program" />.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.MultiLearner">
+            <summary>
+                A learner for a Matching.Text MultiProgram (for multi-column profiling).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.MultiLearner.Instance">
+            <summary>
+                The singleton instance of this class with the default score feature.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.MultiLearner.ScoreFeature">
+            <summary>
+                The <see cref="T:Microsoft.ProgramSynthesis.Features.FeatureInfo" /> used for ranking the top-k programs in
+                <see cref="M:Microsoft.ProgramSynthesis.Wrangling.ProgramLearner`3.LearnTopK(System.Collections.Generic.IEnumerable{Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{`1,`2}},System.Int32,System.Collections.Generic.IEnumerable{`1},System.Threading.CancellationToken)" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.MultiLearner.LearnImpl(System.Collections.Generic.IEnumerable{Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Boolean}}},System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>
+                Learn a set of all programs satisfying the training constraints.
+            </summary>
+            <param name="constraints">The set of constraints.</param>
+            <param name="k">The number of top programs or null for all programs.</param>
+            <param name="cancel">
+                The token to monitor for cancellation requests. The default value is
+                <see cref="P:System.Threading.CancellationToken.None" />.
+            </param>
+            <returns>
+                All programs satisfying the training examples (or the best <paramref name="k" />
+                if <paramref name="k" /> is not null).
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.MultiLearner.LearnAll(System.Collections.Generic.IEnumerable{Microsoft.ProgramSynthesis.Wrangling.Constraints.Constraint{System.Collections.Generic.IEnumerable{System.String},System.Collections.Generic.IEnumerable{System.Boolean}}},System.Collections.Generic.IEnumerable{System.Collections.Generic.IEnumerable{System.String}},System.Threading.CancellationToken)">
+            <summary>
+                Learns all programs from the given positive and negative examples.
+            </summary>
+            <param name="constraints">The examples.</param>
+            <param name="additionalInputs">
+                The set of additional references that do not have output examples, which helps learn
+                programs.
+            </param>
+            <param name="cancel">
+                The token to monitor for cancellation requests. The default value is
+                <see cref="P:System.Threading.CancellationToken.None" />.
+            </param>
+            <returns>The set of all programs consistent with the examples.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.MultiLoader">
+            <summary>
+                A loader for a Matching.Text MultiProgram (for multi-column profiling).
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.MultiLoader.Instance">
+            <summary>
+                The singleton instance of this class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.MultiLoader.Create(Microsoft.ProgramSynthesis.AST.ProgramNode)">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.MultiProgram">
+            <summary>
+                A Matching.Text MultiProgram (for multi-column profiling).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.MultiProgram.#ctor(Microsoft.ProgramSynthesis.AST.ProgramNode)">
+            <summary>
+                Constructs a program wrapping the <paramref name="node" />.
+                Since LabelledPrograms are never directly extracted from VSAs, we don't need the score.
+            </summary>
+            <param name="node">The program to wrap.</param>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.MultiProgram.LabeledProgramNode">
+            <summary>
+                Gets the labelled version of the current program which outputs the matching description
+                rather than a boolean result.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.MultiProgram.Run(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+                Executes the program on the <paramref name="input" /> to obtain the output.
+            </summary>
+            <param name="input">The input strings.</param>
+            <returns>The result of matching each string with the learned profile.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.MultiProgram.GetLabels(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+                Executes the program on the <paramref name="input" /> to obtain the output Tokens
+                and joins them to produce a description.
+            </summary>
+            <param name="input">The input strings.</param>
+            <returns>An Enumerable of matching tokens for each string.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Program">
+            <summary>
+                A program in the text matching DSL.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Program.#ctor(Microsoft.ProgramSynthesis.AST.ProgramNode)">
+            <summary>
+                Constructs a program wrapping the <paramref name="node" />.
+            </summary>
+            <param name="node">The program to wrap.</param>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Program.Examples">
+            <summary>
+                Returns a dictionary mapping disjuncts to example data corresponding to them.
+                This property can be null if no examples are available.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Program.Sizes">
+            <summary>
+                Returns a dictionary mapping disjuncts to the number of points in the input data
+                corresponding to them.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Program.OutlierSamples">
+            <summary>
+                Returns a list of strings that were classified as outliers.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Program.#ctor(Microsoft.ProgramSynthesis.AST.ProgramNode,System.Collections.Generic.IReadOnlyDictionary{Microsoft.ProgramSynthesis.AST.ProgramNode,System.Collections.Generic.IReadOnlyList{System.String}},System.Collections.Generic.IReadOnlyDictionary{Microsoft.ProgramSynthesis.AST.ProgramNode,System.UInt32},System.Collections.Generic.IReadOnlyList{System.String},System.UInt32)">
+            <summary>
+                Constructs a program wrapping the <paramref name="node" />, along with
+                examples for each disjunct given by <paramref name="examples" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Program.#ctor(Microsoft.ProgramSynthesis.AST.ProgramNode,System.Double)">
+            <summary>
+                Constructs a program wrapping the <paramref name="node" />.
+            </summary>
+            <param name="node">The program to wrap.</param>
+            <param name="score">The cached score of the program.</param>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Program.LabeledProgramNode">
+            <summary>
+                Gets the labelled version of the current program which outputs the matching description
+                rather than a boolean result.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Program.Run(System.String)">
+            <summary>
+                Executes the program on the <paramref name="input" /> to obtain the output.
+            </summary>
+            <param name="input">The input.</param>
+            <returns>The result of matching the string with the learned profile.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Program.GetLabel(System.String)">
+            <summary>
+                Executes the program on the <paramref name="input" /> to obtain the output Tokens
+                and joins them to produce a description.
+            </summary>
+            <param name="input">The input string.</param>
+            <returns>The matching tokens.</returns>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Program.Disjuncts">
+            <summary>
+                Return the sequence of <see cref="T:Microsoft.ProgramSynthesis.AST.ProgramNode"/>s for the disjuncts in this program.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Program.Labels">
+            <summary>
+                Return the set of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel"/>s for the disjuncts in this program.
+                Guaranteed to be in the same order as <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Program.Disjuncts"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Program.Serialize(Microsoft.ProgramSynthesis.AST.ASTSerializationSettings)">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Session">
+            <summary>
+                A session for Matching.Text which retains the last learned patterns.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Session.#ctor(Microsoft.ProgramSynthesis.Wrangling.Session.IJournalStorage,System.Globalization.CultureInfo,Microsoft.ProgramSynthesis.Wrangling.Logging.ILogger)">
+            <summary>
+                Creates a new session.
+            </summary>
+            <param name="journalStorage">
+                Backing store for the journal of user actions used to adapt to user preferences. May be
+                null to not save this data.
+            </param>
+            <param name="culture">
+                The <see cref="T:System.Globalization.CultureInfo" /> to use when learning programs; accessible using
+                <see cref="P:Microsoft.ProgramSynthesis.Wrangling.Session.Session`3.Culture" />. Used to select preferred date and number formats and
+                defaults for other culture-specific settings.
+            </param>
+            <param name="logger">
+                The <see cref="T:Microsoft.ProgramSynthesis.Wrangling.Logging.ILogger" /> implementation to use for providing telemetry information.
+            </param>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Session.FirstUnsupportedCharacterInInputs">
+            <summary>
+                If the inputs contain characters that are known to be unsupported by the default tokens, this will
+                be a tuple of the first such input and the character that is unsupported; otherwise, <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Session.LearnPatterns(Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusteringAlgorithm,System.Threading.CancellationToken)">
+            <summary>
+                Profiles the provided examples and saves the learned patterns.
+            </summary>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Session.LearnSinglePattern(System.Threading.CancellationToken)">
+            <summary>
+                Learn a pattern matching all the given examples
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo">
+            <summary>
+                Information about a learned pattern.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Double,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken},System.Boolean)">
+            <summary>
+                Standard constructor initializing each field.
+            </summary>
+            <param name="description">Human-readable description of the pattern.</param>
+            <param name="regex">Regular expression matching the pattern.</param>
+            <param name="regexesToExclude">List of regular expressions to exclude from the pattern.</param>
+            <param name="matchingFraction">The fraction of the original data matched by this pattern.</param>
+            <param name="examples">Some representative examples for this pattern.</param>
+            <param name="descriptionTokens">Tokens used to populate <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.Description"/>.</param>
+            <param name="isNull">Does the pattern match only null strings.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.TokenSequencePattern(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Double,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken})">
+            <summary>
+                Create a pattern info object representing a sequence of tokens.
+            </summary>
+            <param name="description">Human-readable description of the pattern.</param>
+            <param name="regex">Regular expression matching the pattern.</param>
+            <param name="regexesToExclude">List of regular expressions to exclude from the pattern.</param>
+            <param name="matchingFraction">The fraction of the original data matched by this pattern.</param>
+            <param name="examples">Some representative examples for this pattern.</param>
+            <param name="descriptionTokens">Tokens used to populate <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.Description"/>.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.IsNullPatternInfo(System.Double)">
+            <summary>
+                Create a pattern info object representing a pattern that matches only only null strings.
+            </summary>
+            <param name="matchingFraction">The fraction of the original data matched by this pattern.</param>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.IsNull">
+            <summary>
+                Does the pattern match only null strings?
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.Description">
+            <summary>
+                A <c>string</c> description of the pattern.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.Regex">
+            <summary>
+                The description of the pattern as a regular expression string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.RegexesToExclude">
+            <summary>
+                The regexes to exclude from this pattern.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.MatchingFraction">
+            <summary>
+                Fraction of examples matching the pattern.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.Examples">
+            <summary>
+                Some representative examples for the pattern.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.DescriptionTokens">
+            <summary>
+                Tokens used to populate <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.PatternInfo.Description"/>
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule">
+            <summary>
+                The python translation module for Matching.Text
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.DefaultClusteringFunctionName">
+            <summary>
+                The default clustering function name generated.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.Regexes">
+            <summary>
+                List of regexes corresponding to the patterns in the program.
+                A null regex represents a pattern that only matches null strings.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.#ctor(Microsoft.ProgramSynthesis.Matching.Text.Program,System.String,System.String,System.String,Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.TranslationOptions)">
+            <summary>
+                 Construct a translation module for a program.
+            </summary>
+            <param name="program">Program to be translated.</param>
+            <param name="moduleName">The name of the module.</param>
+            <param name="headerModuleName">The name of the header module.</param>
+            <param name="aliasName">The alias to use for the header module.</param>
+            <param name="translationOptions">The options to use for the translation. See <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.TranslationOptions"/>.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.GenerateUnisolatedCode(Microsoft.ProgramSynthesis.Translation.OptimizeFor)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.GenerateClusteringCode(Microsoft.ProgramSynthesis.Translation.OptimizeFor,System.String)">
+            <summary>
+                Produce a python code fragment containing an function that outputs the cluster that a given input string
+                falls into. The clusters are defined by the set of patterns produces by the Matching.Text program.
+            </summary>
+            <param name="optimization">What the code should be optimized for? Currently ignored.</param>
+            <param name="functionName">The name of the function that does the clustering in the generated code.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.GenerateCheckingCode(Microsoft.ProgramSynthesis.Translation.OptimizeFor,System.String)">
+            <summary>
+                Produce a python code fragment containing an function that asserts that a given input string
+                falls into the set of patterns produces by the Matching.Text program.
+            </summary>
+            <param name="optimization">What the code should be optimized for? Currently ignored.</param>
+            <param name="functionName">The name of the function that does the checking in the generated code.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Translation.Python.MatchingTextPythonModule.GenerateHeaderModule(System.String)">
+            <summary>
+                Generates a module containing the header (if any).
+            </summary>
+            <param name="headerModuleName">The name of the header module.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.AdditionalSemantics.IfThenElse(System.Boolean,Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel,Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel)">
+            <summary>
+                A conditional operator.
+            </summary>
+            <param name="if">The condition (result of a token match).</param>
+            <param name="then">The label when the condition is satisfied.</param>
+            <param name="else">The label when the condition is not satisfied.</param>
+            <returns>
+                <paramref name="then" /> if <paramref name="if" /> is <c>true</c>,
+                <paramref name="else" /> otherwise.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel">
+            <summary>
+                A data structure to hold the result of matching.
+                The match can either be a no match, null match, or token sequence.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.Match">
+            <summary>
+                The type of match: no match, null match, or token sequence match.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.IsMatch">
+            <summary>
+                Return true if and only if the matching label corresponds to a successful match.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.GetTokens">
+            <summary>
+                Return the token sequence (if any) corresponding to this match.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">
+                Throws an exception if there is no match or the match corresponds to a IsNull match.
+            </exception>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.NoMatch">
+            <summary>
+                A label corresponding to an unsuccessful match.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.NullMatch">
+            <summary>
+                A label corresponding to a successful IsNull match.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.Tokens(System.Collections.Immutable.IImmutableList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken})">
+            <summary>
+                Create a label corresponding to a successful match of <paramref name="tokens" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Semantics.NoMatch">
+            <summary>
+                An operator which indicates an always-failing match.
+            </summary>
+            <returns><c>false</c></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Semantics.Disjunction(System.Boolean,System.Boolean)">
+            <summary>
+                A Boolean disjunction operator.
+            </summary>
+            <param name="match">Result of match.</param>
+            <param name="disjunctiveMatch">Result of the disjunctive_match.</param>
+            <returns>
+                <c>true</c> if at least one argument is <c>true</c>.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Semantics.IsNull(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)">
+            <summary>
+                Checks if <paramref name="sRegion" /> originates from a <c>null</c> string.
+            </summary>
+            <param name="sRegion">The <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> to be checked.</param>
+            <returns>
+                <c>true</c> if <paramref name="sRegion" /> has a <c>null</c> Source, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Semantics.EndOf(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)">
+            <summary>
+                Checks if <paramref name="sRegion" /> is empty (and non-<c>null</c>).
+            </summary>
+            <param name="sRegion">The <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> to be checked.</param>
+            <returns>
+                <c>true</c> if <paramref name="sRegion" /> is empty, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Semantics.SuffixAfterTokenMatch(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion,Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Extracts a suffix of the source string, after matching the longest prefix with the specified token.
+            </summary>
+            <param name="sRegion">The source <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" />.</param>
+            <param name="token">The <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token" /> to be matched.</param>
+            <returns>
+                A <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> representing the suffix.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion">
+            <summary>
+                Represents a suffix, and retains information about the <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Source" /> string
+                and lazily caches matches with <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" />s.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.#ctor(System.String,System.UInt32)">
+            <summary>
+                Creates a suffix for <paramref name="s" /> starting at <paramref name="start" />.
+            </summary>
+            <param name="s">The source string.</param>
+            <param name="start">The start index of the suffix.</param>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Length">
+            <summary>
+                The length of this SuffixRegion.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.PrefixMatchToken">
+            <summary>
+                The token due to which this SuffixRegion was generated as a suffix.
+                Only set if this SuffixRegion was returned by <see cref="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.UnmatchedSuffix(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)" />.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Start">
+            <summary>
+                The starting index of the suffix, in the <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Source" />.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Source">
+            <summary>
+                The original string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Value">
+            <summary>
+                The substring.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Item(System.Int32)">
+            <summary>
+                Index into value.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)">
+            <summary>
+                Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <returns>
+                true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+            </returns>
+            <param name="other">An object to compare with this object.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.UnmatchedSuffix(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Returns the unmatched suffix of the current <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" />,
+                after matching a <paramref name="token" />.
+            </summary>
+            <param name="token">The token to be matched.</param>
+            <returns>
+                null if <paramref name="token" /> does not match at the beginning of the current
+                <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" />, else a new <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> representing the
+                unmatched suffix.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.ToString">
+            <summary>
+                A <see cref="T:System.String" /> representation of the current <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Equals(System.Object)">
+            <summary>
+                Indicates whether the current object is equal to another object of the same type.
+            </summary>
+            <returns>
+                true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+            </returns>
+            <param name="other">An object to compare with this object.</param>
+            <seealso cref="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)" />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.GetHashCode">
+            <summary>
+                Serves as the default hash function.
+            </summary>
+            <returns>
+                A hash code for the current object.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.CloneWithCurrentCacheState">
+            <summary>
+                Returns a clone of the object with a snapshot/copy of the cache state before the call.
+            </summary>
+            <returns>A clone of <c>this</c> object.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.ClearCaches">
+            <summary>
+                Clears all the cached state in <c>this</c> object.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Microsoft#ProgramSynthesis#Utils#Caching#ICachefulObject#CloneWithCurrentCacheState">
+            <summary>
+                Returns a clone of the object with a snapshot/copy of the cache state before the call.
+                The object returned will be of the same type as <c>this</c> object, and can be safely
+                cast.
+            </summary>
+            <returns>A clone of <c>this</c> object.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.op_Equality(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion,Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)">
+            <summary>
+                Checks if <paramref name="left" /> and <paramref name="right" /> are the same suffixes.
+            </summary>
+            <param name="left">The first <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> to compare.</param>
+            <param name="right">The second <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> to compare.</param>
+            <returns>
+                True if <paramref name="left" /> and <paramref name="right" /> have the same <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Source" />,
+                and <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Start" />.
+            </returns>
+            <seealso cref="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)" />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.op_Inequality(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion,Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)">
+            <summary>
+                Checks if <paramref name="left" /> and <paramref name="right" /> are different suffixes.
+            </summary>
+            <param name="left">The first <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> to compare.</param>
+            <param name="right">The second <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion" /> to compare.</param>
+            <returns>
+                False if <paramref name="left" /> and <paramref name="right" /> have the same <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Source" />,
+                and <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Start" />.
+            </returns>
+            <seealso cref="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.SuffixRegion)" />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass">
+            <summary>
+                A structure defining character classes, i.e., a subset of characters. This is regex oriented; so each class is
+                really represented by a bunch of strings that would go in []'s in a regex.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.SpecialChars">
+            <summary>
+                A list of special characters. These were derived from Regex.Escape documentation, but don't include all the
+                characters escaped by Regex.Escape. This is because we put all characters inside []'s which automatically
+                "unspecializes" some characters like "*", "+", etc.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass._classes">
+            <summary>
+                Strings representing individual "atomic" classes in the Class. They can be of the form "character",
+                "character-character", or "\specialclass".
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass._isAny">
+            <summary>
+                A special boolean indicating if the class is universal.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.RegexString">
+            <summary>
+                Return the character class as a regex string. Guaranteed to be one regex "unit", i.e., not require any brackets
+                around.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.FromUnionOf(System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass})">
+            <summary>
+                Construct a char class from the union of the given char classes.
+            </summary>
+            <param name="charClasses"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.UnionOf(Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass[])">
+            <inheritdoc cref="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.FromUnionOf(System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass})"/>>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.Any">
+            <summary>
+                A universal charclass.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.Character(System.Char)">
+            <summary>
+                A charclass containing only <paramref name="character"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.From(System.Char[])">
+            <summary>
+                A charclass containing only <paramref name="chars"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.Range(System.Char,System.Char)">
+            <summary>
+                A charclass containing the range of characters from <paramref name="begin"/> to <paramref name="end"/>.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.SpecialClass(System.String)">
+            <summary>
+                A charclass representing a special character class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.RenderXML">
+            <summary>
+                Render the current CharClass to an xml node.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass.Parse(System.Xml.Linq.XElement)">
+            <summary>
+                Parse an xml node produced by RenderXML to produce a CharClass.
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken">
+            <summary>
+                A <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken" />, based on a regular expression character class.
+                These tokens have score in the range (-5, Infinity).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.#ctor(System.String,Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClass,System.UInt32,System.Nullable{System.Double})">
+            <summary>
+                Initializes a new instance of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" />.
+            </summary>
+            <param name="name">Name of the token.</param>
+            <param name="charClass">The character class for this token.</param>
+            <param name="size">Size of the character class</param>
+            <param name="score">Override the default score computation with this value.</param>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.UnrestrictedToken">
+            <summary>
+                The unrestricted base character class Token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.RequiredLength">
+            <summary>
+                The required length of characters to be matched.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.CharClass">
+            <summary>
+                The underlying character class for this token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.ClassRegex">
+            <summary>
+                The Regex string describing the character class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.ClassSize">
+            <summary>
+                The number of characters in the character class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+            <param name="other">An object to compare with this object.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.PrefixMatchLength(System.String)">
+            <summary>
+                Searches for the token at the start of the specified string and returns the length of the match.
+            </summary>
+            <param name="target">The string to search for a match.</param>
+            <returns>
+                The length of the match.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.TryGetRegexPattern">
+            <summary>
+                Retrieves a regular expression string that represents this <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> if one exists.
+            </summary>
+            <returns>
+                A valid regular expression string if the <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> can be expressed as a regular expression,
+                <c>null</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.GetNonGreedyRegex">
+            <summary>
+                Retrieves a regular expression string without any greedy, non-backtracking modifiers.
+            </summary>
+            <returns>
+                A valid regular expression string.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.FromUnionOf(System.Collections.Generic.IEnumerable{Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken},System.Nullable{System.Double},System.String)">
+            <summary>
+                Creates a new <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" /> by a union over the provided <paramref name="tokens" />.
+            </summary>
+            <param name="tokens">The <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" /> objects to be combined.</param>
+            <param name="penalty">The penalty to be multiplied with the score.</param>
+            <param name="newName">A new name for the resulting <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" />.</param>
+            <returns>
+                A new <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" /> with the desired new name (if provided).
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.Equals(System.Object)">
+            <summary>Determines whether the specified object is equal to the current object.</summary>
+            <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+            <param name="obj">The object to compare with the current object. </param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.GetHashCode">
+            <summary>Serves as the default hash function. </summary>
+            <returns>A hash code for the current object.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.GetTokenForLength(System.UInt32)">
+            <summary>
+                Creates a <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken" /> which matches exactly <paramref name="length" />
+                characters of the current <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" />.
+            </summary>
+            <param name="length">Length of characters to be consumed by the <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken" />.</param>
+            <returns>
+                A <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token" /> which matches exactly <paramref name="length" />
+                characters of the current <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken" />.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.RenderXML">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.Parse(System.Xml.Linq.XElement)">
+            <summary>
+                Parse an XML node into a CharClassToken.
+            </summary>
+            <param name="node">XML node to be parsed.</param>
+            <returns>
+                Returns a CharClassToken if <paramref name="node" /> represents a valid CharClassToken, and null otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken.Contains(System.Char)">
+            <summary>
+                Returns true if <paramref name="character"/> is matched by this character class.
+            </summary>
+            <param name="character"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken">
+            <summary>
+                A regex token consisting of a sequence of tokens.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.SubTokens">
+            <summary>
+                The component tokens in this Token
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.#ctor(System.String,System.Double,Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken[])">
+            <summary>
+                Create a token named <paramref name="name" /> equivalent to the concatenation of the given tokens
+                <paramref name="subTokens" /> with score <paramref name="score" />.
+            </summary>
+            <param name="name">Name of the constructed token.</param>
+            <param name="subTokens">Component tokens in the constructed token.</param>
+            <param name="score">Score of the constructed token.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken)">
+            <summary>
+                Compare with <paramref name="other"/> token; equal only if each subtoken is equal.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.RenderXML">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.Parse(System.Xml.Linq.XElement)">
+            <summary>
+                Parse the given XML node into a ConcatToken.
+            </summary>
+            <param name="node"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.PrefixMatchLength(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConcatToken.TryGetRegexPattern">
+            <inheritdoc/>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken">
+            <summary>
+                A <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken" />, based on a constant string.
+                These tokens have score in the range (0, -1].
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken.#ctor(System.String,System.Nullable{System.Double})">
+            <summary>
+                Initializes a new <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token" /> instance,
+                based on the constant string <paramref name="str" />.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken.Constant">
+            <summary>
+                The string literal defining this token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken.Length">
+            <summary>
+                The string length in this token.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken.PrefixMatchLength(System.String)">
+            <summary>
+                Searches for the token at the start of the specified string and returns the length of the match.
+            </summary>
+            <param name="target">The string to search for a match.</param>
+            <returns>
+                The length of the match.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken.TryGetRegexPattern">
+            <summary>
+                Retrieves a regular expression string that represents this <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> if one exists.
+            </summary>
+            <returns>
+                A valid regular expression string if the <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> can be expressed as a regular expression,
+                <c>null</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken.RenderXML">
+            <inheritdoc />
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.DefaultTokens.NonDisjointTokensLazy">
+            <summary>
+                This is a dictionary from tokens to a set of tokens. A token, say T1,
+                can be in the set of non-disjoint tokens for another token T, if and only
+                if there exists a string S such that T and T1 can both match some prefix
+                of S, i.e., T and T1 can both consume some input from the beginning of S.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.DefaultTokens.BuildNonDisjointTokenSets">
+            <summary>
+                Lazy constructor/initializer for <see cref="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.DefaultTokens.NonDisjointTokensLazy" />.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken">
+            <summary>
+                An interface for a token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken.Description">
+            <summary>
+                The description for the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken.Name">
+            <summary>
+                The name of the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken.Score">
+            <summary>
+                The score for the token - an indication of how general the Token is.
+                Scores of tokens are non-positive. More general tokens usually have more negative scores.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken.PrefixMatchLength(System.String)">
+            <summary>
+                Searches for the token at the start of the specified string and returns the length of the match.
+            </summary>
+            <param name="target">The string to search for a match.</param>
+            <returns>
+                The length of the match.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken.TryGetRegexPattern">
+            <summary>
+                Retrieves a regular expression string that represents this <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> if one exists.
+            </summary>
+            <returns>
+                A valid regular expression string if the <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> can be expressed as a regular expression,
+                <c>null</c> otherwise.
+            </returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken">
+            <summary>
+                A <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token" />, based on a regular expression.
+                These tokens should usually have score in the range (-1, -4).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken.#ctor(System.String,System.String,System.Double)">
+            <summary>
+                Initializes a new Token instance with the specified <paramref name="name" /> and <paramref name="score" />,
+                based on the regular expression string <paramref name="regex" />. The expression <paramref name="regex" /> is
+                not allowed to match the empty string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken.Regex">
+            <summary>
+                The Regex used for matching this Token.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken.PrefixMatchLength(System.String)">
+            <summary>
+                Searches for the token at the start of the specified string and returns the length of the match.
+            </summary>
+            <param name="target">The string to search for a match.</param>
+            <returns>
+                The length of the match.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken.TryGetRegexPattern">
+            <inheritdoc />
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexToken.RenderXML">
+            <inheritdoc />
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token">
+            <summary>
+                An abstract class which represents an atomic token.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.#ctor(System.String,System.Double,System.String)">
+            <summary>
+                Initializes a new Token instance with the specified <paramref name="name" />, description and score.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.Description">
+            <summary>
+                The description for the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.Name">
+            <summary>
+                The name of the token.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.Score">
+            <summary>
+                The score for the token - an indication of how general the Token is.
+                Scores of tokens are non-positive. More general tokens usually have more negative scores.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.Equals(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+            <param name="other">An object to compare with this object.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.PrefixMatchLength(System.String)">
+            <summary>
+                Searches for the token at the start of the specified string and returns the length of the match.
+            </summary>
+            <param name="target">The string to search for a match.</param>
+            <returns>
+                The length of the match.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.TryGetRegexPattern">
+            <summary>
+                Retrieves a regular expression string that represents this <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> if one exists.
+            </summary>
+            <returns>
+                A valid regular expression string if the <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" /> can be expressed as a regular expression,
+                <c>null</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.ToString">
+            <summary>
+                Returns the name of the token.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.Equals(System.Object)">
+            <summary>Determines whether the specified object is equal to the current object.</summary>
+            <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+            <param name="obj">The object to compare with the current object. </param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.GetHashCode">
+            <summary>Serves as the default hash function. </summary>
+            <returns>A hash code for the current object.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.RenderHumanReadable">
+            <summary>
+                Render this as a human-readable string representation.
+            </summary>
+            <returns>A compact string representation of this object that is easy for a human to understand.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.Token.RenderXML">
+            <summary>
+                Render this as XML.
+            </summary>
+            <returns>An XML representation of this object.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexProfile">
+            <summary>
+                A struct to store the regex information for a given pattern. A string satisfies a profile if and only if it matches
+                the <see cref="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexProfile.Regex" /> and does not match any of <see cref="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexProfile.RegexesToExclude" />.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexProfile.Regex">
+            <summary>
+                The primary regex that defines the strings to include in this profile.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexProfile.RegexesToExclude">
+            <summary>
+                The regexes that need to be excluded from thsi pattern.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.RegexProfile.#ctor(System.String,System.Collections.Generic.IReadOnlyList{System.String})">
+            <summary>
+                Construct a regex profile from the given regex and regexes to exlcude.
+            </summary>
+            <param name="regex">Regex string that matches strings to include in this profile.</param>
+            <param name="regexesToExclude">Regex strings that specify the strings to exclude from this profile.</param>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult">
+            <summary>
+                A data structure for storing the result of "matching" one token against another.
+                The matched tokens are referred to with adjectives left and right.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.LeftRemaining">
+            <summary>
+                The remaining left token after the match.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.RightRemaining">
+            <summary>
+                The remaining right token after the match.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.IsDisjoint">
+            <summary>
+                Do we know if the two tokens matched disjoint?
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.MatchedWithLeftRemaining(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Construct a MatchResult where the right token is completely consumed and some part of the left token
+                is remaining.
+            </summary>
+            <param name="leftRemaining"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.MatchedWithNoneRemaining">
+            <summary>
+                Construct a MatchResult where both tokens are completely consumed.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.MatchedWithRightRemaining(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Construct a MatchResult where the left token is completely consumed and some part of the right token
+                is remaining.
+            </summary>
+            <param name="rightRemaining"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.Unknown(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken,Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Construct a MatchResult where we do not know if the match was successful or not.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.DidNotMatch">
+            <summary>
+                Construct a MatchResult where the match was unsuccessful.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchResult.Invert">
+            <summary>
+                Construct a MatchResult from this one with left and right tokens inverted.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils">
+            <summary>
+                Utilities for <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken"/> objects.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.Separator">
+            <summary>
+                Separator for combining string representations of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken"/>s.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.Null">
+            <summary>
+                A description for a label matching a <c>null</c> string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.Empty">
+            <summary>
+                A description for a label matching an empty string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.UnknownDescription">
+            <summary>
+                A description for a <c>null</c> sequence of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken"/>s.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.Description(Microsoft.ProgramSynthesis.Matching.Text.Semantics.MatchingLabel)">
+            <summary>
+                Describes a matching label.
+            </summary>
+            <param name="matchingLabel">A label assigned by the matching program.</param>
+            <returns>
+                A string description of the matching label.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.BaseRegexDescriptionFor(System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken})">
+            <summary>
+                Generates the base regex string for a pattern. The pattern is represented as a sequence of <see cref="T:Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken" />s.
+                The base regex string represents just the pattern and does not include checks to ensure that this pattern is not
+                subsumed by other patterns.
+            </summary>
+            <param name="pattern">The pattern.</param>
+            <returns>A regex string representing the pattern.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.RegexDescriptions(System.Collections.Generic.IReadOnlyList{System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken}})">
+            <summary>
+                Obtain a list of regex profiles for the provided patterns.
+                Each regex profile consists of a regex and a list of "negative" regexes to exclude from this pattern.
+            </summary>
+            <param name="patterns"></param>
+            <returns>A dictionary mapping token sequences to regex profiles.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.IsDisjoint(System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken},System.Collections.Generic.IReadOnlyList{Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken})">
+            <summary>
+                Check if the two token sequences <paramref name="tokens1" /> and <paramref name="tokens2" /> are
+                disjoint.
+            </summary>
+            <param name="tokens1"></param>
+            <param name="tokens2"></param>
+            <returns>
+                Some(true) or Some(false) is we know for sure if the token sequences are disjoint or not, and Nothing
+                otherwise.
+            </returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.MatchConstants(Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken,Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken)">
+            <summary>
+                Match two constants and return the remaining suffix if they have a common prefix.
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.MatchClasses(Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken,Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken)">
+            <summary>
+                Match two character class tokens and return the remaining token bits.
+            </summary>
+            <param name="left"></param>
+            <param name="right"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.MatchClassAndConstant(Microsoft.ProgramSynthesis.Matching.Text.Semantics.CharClassToken,Microsoft.ProgramSynthesis.Matching.Text.Semantics.ConstantToken,Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Match a character class and a constant and return the remaining bits if any.
+            </summary>
+            <param name="charClass"></param>
+            <param name="constant"></param>
+            <param name="tokenAfterConstant"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.AlwaysHasPositiveLength(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Return true if the token can only match positive length strings.
+            </summary>
+            <param name="token"></param>
+            <returns>True iff all strings matched by the token are non-empty.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Semantics.TokenUtils.AlwaysHasZeroLength(Microsoft.ProgramSynthesis.Matching.Text.Semantics.IToken)">
+            <summary>
+                Return true if the token can only match zero length strings.
+            </summary>
+            <param name="token"></param>
+            <returns>True iff all strings matched by the token are empty.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection">
+            <summary>
+                A class that represents an intersection of two <see cref="!:Cluster" />s.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.LeftCluster">
+            <summary>
+                The first cluster being intersected.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.RightCluster">
+            <summary>
+                The second cluster being intersected.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.Intersection">
+            <summary>
+                The result of intersecting <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.LeftCluster" /> and <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.RightCluster" />.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.#ctor(Microsoft.ProgramSynthesis.Utils.Clustering.Cluster{Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match},Microsoft.ProgramSynthesis.Utils.Clustering.Cluster{Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match},Microsoft.ProgramSynthesis.Utils.Clustering.Cluster{Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match})">
+            <summary>
+                Constructor.
+            </summary>
+            <param name="left">See <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.LeftCluster" />.</param>
+            <param name="right">See <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.RightCluster" />.</param>
+            <param name="intersection">See <see cref="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.Intersection" />.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.Equals(Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection)">
+            <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+            <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+            <param name="other">An object to compare with this object.</param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.Equals(System.Object)">
+            <summary>Indicates whether this instance and a specified object are equal.</summary>
+            <returns>
+                true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise,
+                false.
+            </returns>
+            <param name="obj">The object to compare with the current instance. </param>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusterIntersection.GetHashCode">
+            <summary>Returns the hash code for this instance.</summary>
+            <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Learning.LabelFeature">
+            <summary>
+                A feature which generates a labelled version of a ProgramNode:
+                one that identifies the matching branch with a description, rather than a simple boolean result.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.SortedProgramSetIntersections.Best">
+            <summary>
+                Return the best intersection. Since scores are negative, we want the least negative score (Last element).
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.SortedProgramSetIntersections.GetEnumerator">
+            <summary>Returns an enumerator that iterates through the collection.</summary>
+            <returns>An enumerator that can be used to iterate through the collection.</returns>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.SortedProgramSetIntersections.System#Collections#IEnumerable#GetEnumerator">
+            <summary>Returns an enumerator that iterates through a collection.</summary>
+            <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Learning.TokensCollector">
+            <summary>
+                Walks a ProgramNode's AST and collects the Tokens.
+                This is intended to work only a ProgramNode that corresponds to the
+                let-split rule in the grammar.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Learning.MatchingLabelCollector">
+            <summary>
+                Walks a ProgramNode's AST and collects the MatchingLabel.
+                This is intended to work only on ProgramNodes that correspond to match non-terminal.
+            </summary>
+        </member>
+        <member name="T:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusteringAlgorithm">
+            <summary>
+                The options of how disjunction can be created.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusteringAlgorithm.Sampling">
+            <summary>
+                Use the sampling + set cover algorithm.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusteringAlgorithm.AHC">
+            <summary>
+                Use the agglomerative hierarchical clustering algorithm.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Learning.ClusteringAlgorithm.None">
+            <summary>
+                Do not use any clustering algorithm. Return a single cluster always.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.CreateStateProblemSpace(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Microsoft.ProgramSynthesis.State,System.UInt32}},Microsoft.ProgramSynthesis.Learning.SynthesisEngine,Microsoft.ProgramSynthesis.Rules.OperatorRule,Microsoft.ProgramSynthesis.Learning.LearningTask,System.Threading.CancellationToken)">
+            <summary>
+                Creates a new ProblemSpace on State, using a small sample of additional inputs.
+                The distance computation between two States uses learning, so we need the same parameters as a RuleLearner.
+            </summary>
+            <param name="sampleInputs">The inputs to include in the ProblemSpace.</param>
+            <param name="engine">The synthesis engine.</param>
+            <param name="disjunctionRule">The disjunction rule in the grammar.</param>
+            <param name="top1Task">The learning task.</param>
+            <param name="cancel">A cancellation token.</param>
+            <returns>
+                A ProblemSpace defined on State, with distance between two States defined to be the score of the best
+                program which describes both these States.
+            </returns>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options.DefaultOutlierRate">
+            <summary>
+               The fraction of outliers allowed for the sampling algorithm by default.
+               Hand-picked for best results on benchmarks.
+            </summary>
+        </member>
+        <member name="P:Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options.ThetaFactor">
+            <summary>
+                Used to set <see cref="P:Microsoft.ProgramSynthesis.Utils.Clustering.AgglomerativeHierarchicalClustering`1.ThetaFactor"/>.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options.InSameCluster">
+            <summary>
+                Each element in this list is a bunch of inputs that need to be
+                clustered into the same cluster.
+            </summary>
+        </member>
+        <member name="F:Microsoft.ProgramSynthesis.Matching.Text.Learning.Witnesses.Options.InDifferentCluster">
+            <summary>
+                Each element in this list is a bunch of inputs that all need to be
+                clustered into different cluster.
+            </summary>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.NoMatch">
+            <summary> Build a typed program node correponding to the NoMatch rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.NoMatch, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.disjunctive_match.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.Disjunction(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.disjunctive_match)">
+            <summary> Build a typed program node correponding to the Disjunction rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.Disjunction, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.disjunctive_match.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.SuffixAfterTokenMatch(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.sRegion,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.token)">
+            <summary> Build a typed program node correponding to the SuffixAfterTokenMatch rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.SuffixAfterTokenMatch, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes._LetB0.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.IsNull(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.sRegion)">
+            <summary> Build a typed program node correponding to the IsNull rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.IsNull, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.match.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.EndOf(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.sRegion)">
+            <summary> Build a typed program node correponding to the EndOf rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.EndOf, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.match.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.Tail(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.sRegions)">
+            <summary> Build a typed program node correponding to the Tail rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.Tail, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes._LetB1.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.MatchColumns(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.disjunctive_match,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.multi_result_matches)">
+            <summary> Build a typed program node correponding to the MatchColumns rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.MatchColumns, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes._LetB2.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.Head(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.sRegions)">
+            <summary> Build a typed program node correponding to the Head rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.Head, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes._LetB3.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.Nil(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.sRegions)">
+            <summary> Build a typed program node correponding to the Nil rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.Nil, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.multi_result_matches.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.IfThenElse(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.label,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.labelled_disjunction)">
+            <summary> Build a typed program node correponding to the IfThenElse rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.IfThenElse, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.labelled_disjunction.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.LabelledMatchColumns(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.labelled_disjunction,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.labelled_multi_result)">
+            <summary> Build a typed program node correponding to the LabelledMatchColumns rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.LabelledMatchColumns, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.labelled_multi_result.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.LetResult(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.inputSRegion,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.disjunctive_match)">
+            <summary> Build a typed program node correponding to the LetResult rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.LetResult, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.result.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.LetSplit(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes._LetB0,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.match)">
+            <summary> Build a typed program node correponding to the LetSplit rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.LetSplit, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.match.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.LetMultiResult(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.inputSRegions,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.multi_result_matches)">
+            <summary> Build a typed program node correponding to the LetMultiResult rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.LetMultiResult, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.multi_result.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.LetTail(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes._LetB1,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes._LetB2)">
+            <summary> Build a typed program node correponding to the LetTail rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.LetTail, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes._LetB4.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeRules.LetHead(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes._LetB3,Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes._LetB4)">
+            <summary> Build a typed program node correponding to the LetHead rule.</summary>
+            <remarks>
+                The return type could be RuleNodeTypes.LetHead, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.multi_result_matches.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeUnnamedConversionRules.labelled_disjunction_label(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.label)">
+            <summary> Build a typed program node correponding to the ~convert_labelled_disjunction_label rule.</summary>
+            <remarks>
+                The return type could be UnnamedConversionNodeTypes.labelled_disjunction_label, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.labelled_disjunction.
+            </remarks>
+        </member>
+        <member name="M:Microsoft.ProgramSynthesis.Matching.Text.Build.GrammarBuilders.Nodes.NodeUnnamedConversionRules.labelled_multi_result_nil_label(Microsoft.ProgramSynthesis.Matching.Text.Build.NodeTypes.nil_label)">
+            <summary> Build a typed program node correponding to the ~convert_labelled_multi_result_nil_label rule.</summary>
+            <remarks>
+                The return type could be UnnamedConversionNodeTypes.labelled_multi_result_nil_label, but it is useful in more cases to already
+                apply the implicit conversion to NodeTypes.labelled_multi_result.
+            </remarks>
+        </member>
+    </members>
+</doc>
