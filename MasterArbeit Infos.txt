@@ -13,6 +13,8 @@ Pattern Learner
 Repair System
 Ranker
 
+pip install git+https://github.com/pidgeyusedgust/pyprose
+
 Set threshhold to 10%
 
 Weekly Meetings with Fatemeh
