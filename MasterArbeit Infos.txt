@@ -15,6 +15,9 @@ Ranker
 
 pip install git+https://github.com/pidgeyusedgust/pyprose
 
+lyra.dbs.uni-hannover.de
+https://docs.google.com/spreadsheets/d/17qrfvEaUH93oPkz5x8p8EFx_gfnSVyuyyzxRoJhtCV4/edit#gid=685207987
+
 Set threshhold to 10%
 
 Weekly Meetings with Fatemeh
@@ -58,4 +61,22 @@ https://arxiv.org/pdf/2310.09263
       "Zim-392-PRO",
       "QUAL-10",
 	  
-cd Users/Jonas_Hoppe/Uni/Master_Informatik/MasterArbeit/DataVinci	  
+cd Users/Jonas_Hoppe/Uni/Master_Informatik/MasterArbeit/DataVinci
+
+https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-debian-10
+
+Limitations:
+Only single Column semantic abstraction
+Few shot Prompting -> Chain of Thought Prompting
+
+https://github.com/BigDaMa/raha
+https://github.com/LUH-DBS/holodetect
+https://github.com/HoloClean/HoloClean
+
+https://github.com/DerAbbadon/DataVinci
+
+Just choose 20 out of the 78
+Try out applying LLM before patterns
+String constants and values only out of the column 
+Skip isFormula isLogical, isText = Only alphabetic characters
+https://github.com/D2IP-TUB/Matelda/blob/main/marshmallow_pipeline/column_grouping_module/data_type_features.py

@@ -1,4 +1,4 @@
-objectid,nlcsid,trailtype,nshtsgmntno,nlcsname,famsid,casefileno,mngagcy,adminst,nhtcndctgy,coordsrctype,deffettype,accuracyft,global_id,shape_length
+objectid(long),nlcsid,trailtype,nshtsgmntno,nlcsname,famsid,casefileno,mngagcy,adminst,nhtcndctgy,coordsrctype,deffettype,accuracyft(long),global_id,shape_length(double precision)
 711,NLCS000851,Historic,UT00000001,California Trail,Unknown,UNK,NPS,UT,NHT V,UNK,UNK,-1,{15B16687-5F6E-4638-9526-A568F39E0B30},15037.234661677
 712,NLCS000851,Historic,UT00000002,California Trail,Unknown,UNK,NPS,UT,NHT V,UNK,UNK,-1,{93F88A07-9701-41FE-946E-B0934BA99530},1252.82284574042
 713,NLCS000851,Historic,UT00000003,California Trail,Unknown,UNK,NPS,UT,NHT V,UNK,UNK,-1,{FDB971B2-F586-430E-A5B1-C8C97AC44253},9223.971815926
