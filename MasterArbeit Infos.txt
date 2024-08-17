@@ -5,7 +5,7 @@ Last two months Experiments and Thesis
 
 Ask questions to Microsoft
 Fatemeh creates Server account, sends synthezised DataSet
-Use python, LLMs: Mystral, Llama2
+Use python, LLMs: Mystral, Llama3
 scikit learn for decision trees
 
 Parts of the System:
@@ -47,19 +47,19 @@ https://www.promptingguide.ai/de
 https://arxiv.org/pdf/2310.09263
 
 "Ind-674-PRO",
-      "US-823-JUN",
-      "US-238-JUN",
-      "QUAL-47",
-      "QUAL-21",
-      "Zim-843-PRO",
-      "Eng-781-JUN",
-      "Aus-664-PRO",
-      "QUAL-88",
-      "Ind-473-JUN",
-      "usa_837",
-      "Eng-573-JUN",
-      "Zim-392-PRO",
-      "QUAL-10",
+"US-823-JUN",
+"US-238-JUN",
+"QUAL-47",
+"QUAL-21",
+"Zim-843-PRO",
+"Eng-781-JUN",
+"Aus-664-PRO",
+"QUAL-88",
+"Ind-473-JUN",
+"usa_837",
+"Eng-573-JUN",
+"Zim-392-PRO",
+"QUAL-10",
 	  
 cd Users/Jonas_Hoppe/Uni/Master_Informatik/MasterArbeit/DataVinci
 
@@ -70,13 +70,49 @@ Only single Column semantic abstraction
 Few shot Prompting -> Chain of Thought Prompting
 
 https://github.com/BigDaMa/raha
-https://github.com/LUH-DBS/holodetect
-https://github.com/HoloClean/HoloClean
+https://github.com/BigDaMa/raha
 
 https://github.com/DerAbbadon/DataVinci
+FatemehAhmadi94
+
+No phisical copies for Abedjan
+Contact Auer if he needs phisical copies 
 
 Just choose 20 out of the 78
 Try out applying LLM before patterns
 String constants and values only out of the column 
 Skip isFormula isLogical, isText = Only alphabetic characters
+
 https://github.com/D2IP-TUB/Matelda/blob/main/marshmallow_pipeline/column_grouping_module/data_type_features.py
+
+Example Matrices:
+Start I(A) I([0-9]) I(\.) I(A) I([0-9]) I(\.)
+D(A) M I([0-9]) I(\.) I(A) I([0-9]) I(\.)
+D(A) D(A) S([0-9]) S(\.) M I([0-9]) I(\.)
+D(A) D(A) S([0-9]) S(\.) M S([0-9]) S(\.)
+D(3) D(3) M S(\.) S(A) M I(\.)
+0 1 2 3 4 5 6
+1 0 1 2 3 4 5
+2 1 1 2 2 3 4
+3 2 2 2 2 3 4
+4 3 2 3 3 2 3
+
+TODO:
+Track FireRate
+Ask Fatemeh how to match different columnNames
+Ask Fatemeh: DecisionTree Sampling
+Split on char to number
+
+Experiment ideas:
+Standard to compare to baselines
+without LLM
+with chatGPT?!?
+with SingleDecisionTree
+with RandomForest
+
+Detection: TP: 21, TN: 238, FP: 0, FN: 28, precision: 1.0, recall: 0.42857142857142855, F1-score: 0.6
+Repair: TP: 14, TN: 238, FP: 7, FN: 28, precision: 0.6666666666666666, recall: 0.3333333333333333, F1-score: 0.4444444444444444
+
+One prompt: duration: 581.8135540485382
+50 entries per prompt: duration: 1200.121593952179
+10 entries per prompt: duration: 3028.4456465244293
