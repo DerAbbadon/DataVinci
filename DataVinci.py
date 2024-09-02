@@ -7,12 +7,15 @@ import os
 import Levenshtein
 import random
 import time
+import requests
+import json
 from sklearn import tree
 from sklearn.calibration import LabelEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 
 from pyprose.matching.text import learn_patterns
-
+URL = "http://lyra.dbs.uni-hannover.de:11434/api/generate"
 DATABASE_PATH = "./DGov_Typo/"
 SIGNIFICANCE_THRESHHOLD = 0.1
 SEMANTIC_TYPES = ["name", "country", "currency", "city", "year", "age", "ISBN", "day", "gender", "language", "nationality", "religion", "artist", "company", "industry", "species", "region", "address", "continent", "location"]
@@ -24,16 +27,18 @@ QUESTION_END = '; Masked Column: '
 #Weights for the heuristic ranker
 levenshteinWeight = 0.25 #weigth of the Levenshtein distance beetween repaired value and original value
 operationWeight = 0.25 #weigth of the count of alphanumeric edit operations used to generate repair value
-closestNeighbourWeight = 0.28 #weigth of the minimal Levenshtein distance to the other values in the column
-fractionWeight = 0.17 #weigth of the fraction of the column matching the pattern used to generate repair value
+closestNeighbourWeight = 0.3 #weigth of the minimal Levenshtein distance to the other values in the column
+fractionWeight = 0.2 #weigth of the fraction of the column matching the pattern used to generate repair value
 
 
 def main():
-   #iterateOverSubfolders(DATABASE_PATH)
+   calculateTotal()
+   #iterateOverSubfoldersSkipping(DATABASE_PATH)
    db_in =pandas.read_csv("dirty.csv")
-   db_in = db_in['nlcsname'].to_frame()
+   db_in = db_in.astype(str)
    db = db_in.astype(str)
-   dirty = db_in.astype(str)
+   #dirty = db_in.astype(str)
+   '''
    examples = [
       "Ind-674-PRO",
       "US-823-JUN",
@@ -65,11 +70,10 @@ def main():
       'Muenchen-1997'
    ]
    patterns = ["^QUAL-[0-9]{2}$", "^[A-Z][a-z]+-[0-9]{3}-[A-Z]{3}$", "^A[0-9]\.A[0-9]\.A[0-9]\.$", "^A[0-9]\.A[0-9]\.$"]
-   #db = db.iloc[:,[4]]
    examples_short = [
-      "Ind-674-PRO",
-      "US-823-JUN",
-      "US-238-JUN"]
+      "pon{Tem-p}on\\34?3",
+      "3A(3i)n.dree",
+      "3[34p]et"]
    examples_masked= [
       "{country(Ind)}-674-{product(PRO)}",
       "{country(US)}-823-{season(JUN)}",
@@ -85,13 +89,17 @@ def main():
       "{city(Bremen)}-2019",
       "{city(Muenchen)}-1997"
    ]
-   example_db = pandas.DataFrame(examples_masked,columns=['examples'])
+   '''
+   #example_db = pandas.DataFrame(examples_short,columns=['examples'])
    #example_db =pandas.read_csv("example.csv").astype(str)
    #small_example_db = example_db['B'].to_frame()
    #columnMaskingWithLLM(db,'nlcsid')
-   columnMaskingWithLLMmultiplePrompts(db,'nlcsname',10)
+   #columnMaskingWithLLMmultiplePrompts(db,'nlcsname',10)
 
    #DataVinci(db)
+   #DataVinciNoLLM(db)
+   #DataVinciNoLLMRandomForest(db)
+   #DataVinciNoLLMSingleTree(db)
 
    #print(getMinimalEditDistance(example_db,'examples','Hamburg-2023'))
 
@@ -141,7 +149,7 @@ def DataVinci(data: pandas.DataFrame):
    featureDict = {}
    patterns = {}
    for columnName in data.columns:
-      #columnMaskingWithLLM(data,columnName)
+      columnMaskingWithLLM(data,columnName)
       column = data[columnName]
       columnDF = column.to_frame()
       patterns[columnName] = getPatterns(column)
@@ -157,7 +165,8 @@ def DataVinci(data: pandas.DataFrame):
    print(f"patterns: {patterns}")
    #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
    fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
-   #print(f"feature dict: {featureDict}")   
+   #print(f"feature dict: {featureDict}")
+   print("generated feature Dict")   
    columnIndex = 0         
    for columnName in data.columns:
       column = data[columnName]
@@ -180,7 +189,7 @@ def generateCandidates(data: pandas.DataFrame, patterns, entry):
    candidates = []
    for pattern in patterns:
       newDags = generateDAG(str(pattern)[::-1],entry,[],0)
-      #print(f"pattern: {pattern}, Dags: {newDags}")
+      print(f"Dags generated: pattern: {pattern}, Dags: {newDags}")
       for dag in newDags:
          moves,costs = generateMatrices(dag,entry)
          fillMatrices(dag,entry,moves,costs)
@@ -359,7 +368,7 @@ def fillMatrices(Dag, entry: str, moves, costs, entryIndex = 0, DagIndex = 0 ):
    #Matching or Substituting a character
    if not entryIndex == len(entry) and not DagIndex == len(Dag):
       pattern = rf"^{Dag[DagIndex]}$"
-      regex = re.compile(pattern)
+      regex = re.compile(re.escape(pattern))
       if costs[(entryIndex,DagIndex)] < costs[(entryIndex + 1,DagIndex + 1)]:
          #Character is matching
          if not regex.match(entry[entryIndex]) == None:
@@ -429,7 +438,8 @@ def handleSpecialRegex(candidate):
 def chooseRepair(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, columnIndex: int, columnName: str, featureDict: dict, errormatrix, stringConstants, commonLengths):
    candidates = generateCandidates(data,patterns,entry)
    rankedCandidates = {}
-
+   candidatePatterns = {}
+   print("candidates ready for concretizing")
    for value in candidates:
       (candidate,pattern,cost) = value
       abstractEditIndices = []
@@ -445,7 +455,77 @@ def chooseRepair(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, co
          xTrain, xTest, yTrain, yTest = train_test_split(featureVectors,encodedLabels,test_size=0.2)
          
          classifier = sampleDecisionTrees(xTest,xTrain,yTest,yTrain)
-         print(classifier)
+         print(f"candidate: {candidate} leads to classifier: {classifier}")
+         candidateFeatures = assembleCandidateFeatures(data,rowIndex,columnIndex,candidate,featureDict,errormatrix,stringConstants,commonLengths)
+         #print(f"candidate features: {candidateFeatures}, length of feature vector: {len(candidateFeatures)}")
+         candidateLabel = classifier.predict(candidateFeatures)
+         decodedLabel = encoder.inverse_transform(candidateLabel)
+         #print(decodedLabel)
+         concreteCandidate = concretizeCandidate(candidate,abstractEditIndices,decodedLabel[0])
+         rankedCandidates[concreteCandidate] = cost
+         candidatePatterns[concreteCandidate] = pattern
+      else:
+         stringCandidate = candidateToString(candidate)
+         rankedCandidates[stringCandidate] = cost
+         candidatePatterns[stringCandidate] = pattern
+   heutisticRanker(data,columnName,rankedCandidates,entry,pattern)           
+   sortedRankedCandidates = sorted(rankedCandidates, key=rankedCandidates.get, reverse=False)     
+   return sortedRankedCandidates[0]
+
+def chooseRepairSingleTree(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, columnIndex: int, columnName: str, featureDict: dict, errormatrix, stringConstants, commonLengths):
+   candidates = generateCandidates(data,patterns,entry)
+   rankedCandidates = {}
+   print("candidates ready for concretizing")
+   for value in candidates:
+      (candidate,pattern,cost) = value
+      abstractEditIndices = []
+      for index in range(0,len(candidate)):
+         if len(candidate[index]) > 1:
+            abstractEditIndices.append(index)
+      #print(f"candidate: {candidate} \n pattern: {pattern} \n abstract edit indices: {abstractEditIndices}")      
+      if len(abstractEditIndices) > 0:
+         encoder = LabelEncoder()      
+         (featureVectors,labels) = chooseTrainingData(data, columnName, pattern, featureDict, abstractEditIndices)
+         #print(f"training values: {featureVectors} \n labels: {labels}")
+         encodedLabels = encoder.fit_transform(labels)
+         
+         classifier = tree.DecisionTreeClassifier()
+         classifier.fit(featureVectors,encodedLabels)
+         print(f"candidate: {candidate} leads to classifier: {classifier}")
+         candidateFeatures = assembleCandidateFeatures(data,rowIndex,columnIndex,candidate,featureDict,errormatrix,stringConstants,commonLengths)
+         #print(f"candidate features: {candidateFeatures}, length of feature vector: {len(candidateFeatures)}")
+         candidateLabel = classifier.predict(candidateFeatures)
+         decodedLabel = encoder.inverse_transform(candidateLabel)
+         #print(decodedLabel)
+         concreteCandidate = concretizeCandidate(candidate,abstractEditIndices,decodedLabel[0])
+         rankedCandidates[concreteCandidate] = cost
+      else:
+         stringCandidate = candidateToString(candidate)
+         rankedCandidates[stringCandidate] = cost
+   heutisticRanker(data,columnName,rankedCandidates,entry,pattern)           
+   sortedRankedCandidates = sorted(rankedCandidates, key=rankedCandidates.get, reverse=False)     
+   return sortedRankedCandidates[0]
+
+def chooseRepairRandomForest(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, columnIndex: int, columnName: str, featureDict: dict, errormatrix, stringConstants, commonLengths):
+   candidates = generateCandidates(data,patterns,entry)
+   rankedCandidates = {}
+   print("candidates ready for concretizing")
+   for value in candidates:
+      (candidate,pattern,cost) = value
+      abstractEditIndices = []
+      for index in range(0,len(candidate)):
+         if len(candidate[index]) > 1:
+            abstractEditIndices.append(index)
+      #print(f"candidate: {candidate} \n pattern: {pattern} \n abstract edit indices: {abstractEditIndices}")      
+      if len(abstractEditIndices) > 0:
+         encoder = LabelEncoder()      
+         (featureVectors,labels) = chooseTrainingData(data, columnName, pattern, featureDict, abstractEditIndices)
+         #print(f"training values: {featureVectors} \n labels: {labels}")
+         encodedLabels = encoder.fit_transform(labels)
+         
+         classifier = RandomForestClassifier()
+         classifier.fit(featureVectors,encodedLabels)
+         print(f"candidate: {candidate} leads to classifier: {classifier.get_params()}")
          candidateFeatures = assembleCandidateFeatures(data,rowIndex,columnIndex,candidate,featureDict,errormatrix,stringConstants,commonLengths)
          #print(f"candidate features: {candidateFeatures}, length of feature vector: {len(candidateFeatures)}")
          candidateLabel = classifier.predict(candidateFeatures)
@@ -464,8 +544,11 @@ def generateStringConstantsOfColumn(data: pandas.DataFrame, columnName: str):
    constants = []
    column = data[columnName]
    for entry in column:
+      #print(f"splitting entry {entry}")
+      constants.append(entry)
       tempConstants = re.split('[^a-zA-z0-9]',str(entry))
       temp = []
+      #print(f"tempContestants before splitting on caseChanges: {tempConstants}")
       for item in tempConstants: #Split on Case Changes
          if item == '': #Splitting on the non-alphanumeric values with regex can lead to empty strings, which we can filter at this line
             continue
@@ -482,26 +565,87 @@ def generateStringConstantsOfColumn(data: pandas.DataFrame, columnName: str):
             else:
                lastWasLower = False
             newItem += c
+         #Appending Last Item in the Loop   
          splits.append(newItem)   
          temp.extend(splits)
-      tempConstants = temp   
-      '''
-      for item in tempConstants: #Split on Changes between contiguous alphabetic and numeric characters
+         #print(f"item {item} leads to splits {splits} and extends temp to {temp}")
+      tempConstants = temp
+      temp = []
+      #print(f"tempContestants before splitting on continous alphabetic Changes: {tempConstants}")   
+      for item in tempConstants: #Split on Changes between contiguous alphabetic and numeric characters, meaning at least 2 alphabetic characters followed by at least 2 numeric characters
+         #print(f"splitting {item} on continuous alphabetic and numeric characters")
          splits = []
          newItem = ""
-         lastWasLower = False
+         tempNewItem = ""
+         firstWasAlphabetic = False
+         secondWasAlphabetic = False
+         thirdWasNumeric = False
          for c in item:
-            if c.islower() == True:
-               lastWasLower = True
-            elif c.isupper() == True and lastWasLower == True:
+            if c.isnumeric() and firstWasAlphabetic == True and secondWasAlphabetic == True and thirdWasNumeric == True:  
                splits.append(newItem)
-               newItem = ""
-               lastWasLower = False
+               newItem = tempNewItem + c
+               tempNewItem = ""
+               firstWasAlphabetic = False
+               secondWasAlphabetic = False
+               thirdWasNumeric = False
+            elif c.isnumeric() and firstWasAlphabetic == True and secondWasAlphabetic == True:
+               thirdWasNumeric = True
+               tempNewItem += c
+            elif c.isalpha() and firstWasAlphabetic == True:
+               secondWasAlphabetic = True
+               newItem += c
+            elif c.isalpha():
+               firstWasAlphabetic = True
+               newItem += c
             else:
-               lastWasLower = False
-            newItem += c
+               firstWasAlphabetic = False
+               secondWasAlphabetic = False
+               thirdWasNumeric = False
+               newItem += tempNewItem + c
+               tempNewItem = ""
          splits.append(newItem)   
-         temp.extend(splits)'''
+         temp.extend(splits)
+         #print(f"item {item} leads to splits {splits} and extends temp to {temp}")
+      tempConstants = temp 
+      temp = []
+
+      #print(f"tempContestants before splitting on continous numeric Changes: {tempConstants}") 
+      for item in tempConstants: #Split on Changes between contiguous numeric and alphabetic characters, meaning at least 2 numeric characters followed by at least 2 alphabetic characters
+         #print(f"splitting {item} on continuous numeric and alphabetic characters")
+         splits = []
+         newItem = ""
+         tempNewItem = ""
+         firstWasNumeric  = False
+         secondWasNumeric = False
+         thirdWasAlphabetic = False
+         for c in item:
+            #print(f"character {c}, is alpha {c.isalpha()}, is numeric: {c.isnumeric()}")
+            if c.isalpha() and firstWasNumeric  == True and secondWasNumeric  == True and thirdWasAlphabetic == True:  
+               splits.append(newItem)
+               newItem = tempNewItem + c
+               tempNewItem = ""
+               firstWasNumeric  = False
+               secondWasNumeric  = False
+               thirdWasAlphabetic = False
+            elif c.isalpha() and firstWasNumeric  == True and secondWasNumeric  == True:
+               thirdWasAlphabetic = True
+               tempNewItem += c   
+            elif c.isnumeric() and firstWasNumeric  == True:
+               secondWasNumeric  = True
+               newItem += c
+            elif c.isnumeric():
+               firstWasNumeric  = True
+               newItem += c
+            else:
+               firstWasNumeric  = False
+               secondWasNumeric  = False
+               thirdWasAlphabetic = False
+               newItem += tempNewItem + c
+               tempNewItem = ""
+         splits.append(newItem)   
+         temp.extend(splits)
+         #print(f"item {item} leads to splits {splits} and extends temp to {temp}")
+      tempConstants = temp  
       constants.extend(tempConstants)
    constants = list(set(constants))                    
    return constants
@@ -546,6 +690,14 @@ def heutisticRanker(data: pandas.DataFrame, columnName: str, repairCandidates: d
    maxCount = max(countOperations.values())
    minMinDistance = min(minimalDistances.values())
    maxMinDistance = max(minimalDistances.values())
+   #If all the values are the same the normalization (x-min)/(max-min) = 0/0, which gives an error, so we correct the max to min + 1 to get 0/1
+   if minEditDistance == maxEditDistance:
+      maxEditDistance += 1
+   if minCount == maxCount:
+      maxCount += 1
+   if minMinDistance == maxMinDistance:
+      maxMinDistance += 1      
+
    #print(f"dict: {editDistances} \n min: {minEditDistance}, max: {maxEditDistance}")
    for candidate in repairCandidates.keys():
       #print(f"weighted score: {levenshteinWeight} * ({editDistances[candidate]} - {minEditDistance}) / ({maxEditDistance} - {minEditDistance}) + {operationWeight} * ({countOperations[candidate]} - {minCount}) / ({maxCount} - {minCount}) + {closestNeighbourWeight} * ({minimalDistances[candidate]} - {minMinDistance}) / ({maxMinDistance} - {minMinDistance}) + {fractionWeight} * {matchingFraction}")   
@@ -610,8 +762,7 @@ def concretizeCandidate(candidate, abstractIndizes,predictedLabel):
          concreteCandidate += candidate[index]   
    return concreteCandidate
 
-def sampleDecisionTrees(xTest,xTrain,yTest,yTrain):         
-
+def sampleDecisionTrees(xTest,xTrain,yTest,yTrain):
    accuracyDict = {}
 
    #Decision tree without extra restraints always in the list
@@ -620,15 +771,17 @@ def sampleDecisionTrees(xTest,xTrain,yTest,yTrain):
    unrestrictedDepth = unrestrictedDecisionTree.get_depth()
    unrestrictedNrNodes = unrestrictedDecisionTree.get_n_leaves()
    accuracyDict[unrestrictedDecisionTree] = unrestrictedDecisionTree.score(xTest,yTest)
-   unrestrictedDecisionTree
 
+   maxNodes = len(xTrain)
+   maxDepth = math.ceil(math.log2(maxNodes))
+   #print(f"max nodes: {maxNodes}, max depth: {maxDepth}")
    #print(f"Standard tree has: depth = {unrestrictedDepth}, nrNodes = {unrestrictedNrNodes}, accuracy = {accuracyDict[unrestrictedDecisionTree]}")
    depthsNodeCombos = []
-   possibleDepths = list(range(2,unrestrictedDepth + 1)) #A tree of depth 1 would just consist of two nodes, so its not very sensible. So we start at 2, with up to 4 classes. Since the decisionTree without maxDepth splits until each node is pure or contains only 1 sample, a higher depth is not possible, so we use this as our upper bound
-   for depth in possibleDepths:
-      upperBound = max(int(math.pow(2,depth)),unrestrictedNrNodes)
-      possibleNrNodes = list(range(depth+1,upperBound)) #Only splitting one node at each depth level gives us the minimum number of leaf nodes for a tree of this depth, which is depth+1, since there is a leaf node at each level and at least 2 on the lowest level, compensating for the root node. Splitting each node at each depth level gives us the maximum number of nodes for a tree of this depth, which is 2^depth, since we start with 1 node at depth 0 and double from there.  Since the decisionTree without maxDepth splits until each node is pure or contains only 1 sample, it has the maximum number of possible leaf nodes in this exact case, so this number is used, if it's lower than the theoretical maximum 
-      for numberNodes in possibleNrNodes:
+   #A tree of depth 1 would just consist of two nodes, so its not very sensible. So we start at 2, with up to 4 classes. 
+   for depth in range(2,maxDepth):
+      upperBound = max(int(math.pow(2,depth)),maxNodes)
+   #Only splitting one node at each depth level gives us the minimum number of leaf nodes for a tree of this depth, which is depth+1, since there is a leaf node at each level and at least 2 on the lowest level, compensating for the root node. Splitting each node at each depth level gives us the maximum number of nodes for a tree of this depth, which is 2^depth, since we start with 1 node at depth 0 and double from there.  Since the decisionTree can't have more than 1 leaf node per training sample, this number the maximum number of possible leaf nodes, so this number is used, if it's lower than the theoretical maximum 
+      for numberNodes in range(depth+1,upperBound):
          depthsNodeCombos.append((numberNodes,depth))
    if len(depthsNodeCombos) > 1: #We have multiple decision trees to sample from
       bestTree = unrestrictedDecisionTree
@@ -651,7 +804,7 @@ def sampleDecisionTrees(xTest,xTrain,yTest,yTrain):
                bestTree = decisionTree
                minDepth = bestTree.get_depth()
                minNrNodes = bestTree.get_n_leaves()
-         if nrTreesSampled >= 100: #we will sample 100 DecisionTrees
+         if nrTreesSampled >= 10: #we will sample 10 DecisionTrees
             break
       #print(accuracyDict)
       #print(f"Returned tree has: depth = {bestTree.get_depth()}, nrNodes = {bestTree.get_n_leaves()}, accuracy = {accuracyDict[bestTree]}, max number leaves = {bestTree.get_params()}")  
@@ -757,17 +910,17 @@ def equals(value: str, s: str):
    return 0
 
 def contains(value: str, s: str):
-   if re.search(rf"{s}",value):
+   if re.search(rf"{re.escape(s)}",value):
       return 1
    return 0
 
 def startsWith(value: str, s: str):
-   if re.search(rf"^{s}",value):
+   if re.search(rf"^{re.escape(s)}",value):
       return 1
    return 0
 
 def endsWith(value: str, s: str):
-   if re.search(rf"{s}$",value):
+   if re.search(rf"{re.escape(s)}$",value):
       return 1
    return 0
 
@@ -808,7 +961,6 @@ def candidateToString(candidate):
    return string   
 
 def columnMaskingWithLLM(data: pandas.DataFrame, columnName: str):
-   startTime = time.time()
    dataShape = data.shape
    column = data[columnName].to_frame()
    columnString = ""
@@ -820,7 +972,7 @@ def columnMaskingWithLLM(data: pandas.DataFrame, columnName: str):
 
    llmInput = LLM_QUESTION + columnString + QUESTION_END
 
-   #print(f"LLM input: {llmInput}")
+   print(f"LLM input: {llmInput}")
    response = ollama.chat(model='llama3', messages=[
    {
       'role': 'user',
@@ -831,11 +983,14 @@ def columnMaskingWithLLM(data: pandas.DataFrame, columnName: str):
    print(f"LLM response: {response['message']['content']}")
    answerStringLines = re.split('\n',answerString)
    #print(f"LLM response split by linebreaks: {answerStringLines}")
+   foundCandidate = False
    for line in answerStringLines:
       maskedValues = re.split(',',line)
       #print(f"{line} after splitting on ,: {maskedValues}; lenght = {len(maskedValues)} , data shape = {dataShape[0]}")
       if len(maskedValues) == dataShape[0]:
-         #print("replacing data")
+         if foundCandidate and not re.search('Masked Column:',line):
+            print(f"found candidate already and {line} does not contain the key words Masked Column")
+            continue
          for index,row in column.iterrows():
             repair = maskedValues[index]
             if index == 0: #First Value might have a prefix in front of it 
@@ -843,17 +998,18 @@ def columnMaskingWithLLM(data: pandas.DataFrame, columnName: str):
                repair = re.sub('Masked Column: ',"",repair)
             if index + 1 == dataShape[0]: #Last value might have an extra ";"
                repair = re.sub(';','',repair)
-            re.sub('[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
+            re.sub('^[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
             data.at[index,columnName] = repair
-         break
+         foundCandidate = True
    #print(f"masked data: {data}")
-   print(f"duration: {time.time() - startTime}")
+   #print(f"duration: {time.time() - startTime}")
 
-def columnMaskingWithLLMmultiplePrompts(data: pandas.DataFrame, columnName: str, maxLength: int):
+def columnMaskingWithLlmMultiplePrompts(data: pandas.DataFrame, columnName: str, maxLength: int):
    startTime = time.time()
    column = data[columnName].to_frame()
    columnString = ""
    count = 0
+   startIndex = 0
    for index,row in column.iterrows():
       if count == 0: #Index of the first value added to the columnString
          startIndex = index
@@ -865,7 +1021,7 @@ def columnMaskingWithLLMmultiplePrompts(data: pandas.DataFrame, columnName: str,
       if count == maxLength:
          llmInput = LLM_QUESTION + columnString + QUESTION_END
 
-         print(f"LLM input: {llmInput}")
+         #print(f"LLM input: {llmInput}")
          response = ollama.chat(model='llama3', messages=[
          {
             'role': 'user',
@@ -873,14 +1029,18 @@ def columnMaskingWithLLMmultiplePrompts(data: pandas.DataFrame, columnName: str,
          },
          ])
          answerString = response['message']['content']
-         print(f"LLM response: {response['message']['content']}")
+         #print(f"LLM response: {response['message']['content']}")
          answerStringLines = re.split('\n',answerString)
          #print(f"LLM response split by linebreaks: {answerStringLines}")
+         foundCandidate = False
          for line in answerStringLines:
             maskedValues = re.split(',',line)
-            print(f"{line} after splitting on ,: {maskedValues}; lenght = {len(maskedValues)} , data shape = {count}")
+            #print(f"{line} after splitting on ,: {maskedValues}; lenght = {len(maskedValues)} , data shape = {count}")
             if len(maskedValues) == count:
-               print("replacing data")
+               #print("replacing data")
+               if foundCandidate and not re.search('Masked Column:',line):
+                  print(f"found candidate already and {line} does not contain the key words Masked Column")
+                  continue
                for i in range(0,count):
                   repair = maskedValues[i]
                   if i == 0: #First Value might have a prefix in front of it 
@@ -890,14 +1050,14 @@ def columnMaskingWithLLMmultiplePrompts(data: pandas.DataFrame, columnName: str,
                      repair = re.sub(';','',repair)
                   re.sub('[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
                   data.at[startIndex + i,columnName] = repair
-               break
+               foundCandidate = True
          count = 0
          columnString = ""
 
    if count > 0: #LLM has to be prompted again with the last part of the column, since the number of cells in the column might not be divisible by 50
       llmInput = LLM_QUESTION + columnString + QUESTION_END
 
-      print(f"LLM input: {llmInput}")
+      #print(f"LLM input: {llmInput}")
       response = ollama.chat(model='llama3', messages=[
       {
          'role': 'user',
@@ -905,17 +1065,18 @@ def columnMaskingWithLLMmultiplePrompts(data: pandas.DataFrame, columnName: str,
       },
       ])
       answerString = response['message']['content']
-      print(f"LLM response: {response['message']['content']}")
+      #print(f"LLM response: {response['message']['content']}")
       answerStringLines = re.split('\n',answerString)
       #print(f"LLM response split by linebreaks: {answerStringLines}")
-      foundRepair = False
+      foundCandidate = False
       for line in answerStringLines:
-         if foundRepair: #Found a suitable repair already, which may be a copy of the original Data Column or the Masked Column. Only look specifically for a lin with Masked Column from here on out, since the copy of the original Data Column always comes first in the LLM answer, if included
-            maskedColumnFound = re.search('Masked Column:')
          maskedValues = re.split(',',line)
-         print(f"{line} after splitting on ,: {maskedValues}; \n lenght = {len(maskedValues)} , data shape = {count}")
+         #print(f"{line} after splitting on ,: {maskedValues}; \n lenght = {len(maskedValues)} , data shape = {count}")
          if len(maskedValues) == count:
             #print("replacing data")
+            if foundCandidate and not re.search('Masked Column:',line):
+               print(f"found candidate already and {line} does not contain the key words Masked Column")
+               continue
             for i in range(0,count):
                repair = maskedValues[i]
                if i == 0: #First Value might have a prefix in front of it 
@@ -925,9 +1086,11 @@ def columnMaskingWithLLMmultiplePrompts(data: pandas.DataFrame, columnName: str,
                   repair = re.sub(';','',repair)
                re.sub('[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
                data.at[startIndex + i,columnName] = repair
-            foundRepair = True       
-   print(f"masked data: {data}")
-   print(f"duration: {time.time() - startTime}")          
+            foundCandidate = True       
+   #print(f"masked data:")
+   #for index,row in data.iterrows():
+      #print(row[columnName])
+   #print(f"duration: {time.time() - startTime}")          
 
 def getMinimalEditDistance(data: pandas.DataFrame, columnName: str, entry: str):
    minDistance = -1
@@ -962,35 +1125,712 @@ def removeMasks(data: pandas.DataFrame):
                   #print(f"match {match} with matchRegex {matchRegex} leads to unmasked value {withoutMask} and newEntry {newEntry}")
                   entry = newEntry
             data.at[(index,columnName)] = entry
-   print(data)           
+   #print(data)           
             
 def iterateOverSubfolders(directory: str):
+   totalStartTime = time.time()
+   saveName = "QuintetNo"
+   try:
+      number_df = pandas.read_csv(f"./{saveName}.csv")
+      number_dict = number_df.to_dict('list')
+      number_dict.pop('Unnamed: 0',None)
+      print(number_dict)
+   except FileNotFoundError:
+      number_dict = {"folderName": [], "precisionDetection": [], "recallDetection": [], "fscoreDetection": [],"fireRate": [], "precisionRepair": [], "recallRepair": [], "fscoreRepair": [], "time": [], "tpDetection": [], "fpDetection": [], "fnDetection": [], "tnDetection": [],"tpRepair": [], "fpRepair": [], "fnRepair": [], "tnRepair": []}
    truePosDetection,trueNegDetection,falsePosDetection,falseNegDetection = 0,0,0,0
    truePosRepair,trueNegRepair,falsePosRepair,falseNegRepair = 0,0,0,0
    for path,folders,files in os.walk(directory):               
       for folder_name in folders:
+         if folder_name in number_dict["folderName"]:
+            print(f"skipping folder {folder_name} since its already in the dictionary")
+            continue
          db_in =  pandas.read_csv(f"{path}/{folder_name}/dirty.csv")
+         clean = pandas.read_csv(f"{path}/{folder_name}/clean.csv").astype(str)
+         db_in.columns = clean.columns
          db = db_in.astype(str)
          dirty = db_in.astype(str)
-         clean = pandas.read_csv(f"{path}/{folder_name}/clean.csv").astype(str)
-         #print(f"{folder_name}: \n dirty databas: {db}")
+         
+         print(f"{folder_name}: \n dirty databas: {db}")
+         startTime = time.time()
+
          #DataVinci(db)
+         #DataVinciNoLLM(db)
+         #DataVinciNoLLMRandomForest(db)
+         #DataVinciNoLLMSingleTree(db)
+
+         number_dict["folderName"].append(folder_name)
+         number_dict["time"].append(time.time() - startTime)
          truePos,trueNeg,falsePos,falseNeg = calculateMetricsDetection(db,dirty,clean)
+         precisionDetection,recallDetection,F1scoreDetection = calculateF1Score(truePos,trueNeg,falsePos,falseNeg)
+         fireRate = (truePos + falsePos) / (truePos+trueNeg+falsePos+falseNeg)
+         number_dict["precisionDetection"].append(precisionDetection)
+         number_dict["recallDetection"].append(recallDetection)
+         number_dict["fscoreDetection"].append(F1scoreDetection)
+         number_dict["fireRate"].append(fireRate)
+         number_dict["tpDetection"].append(truePos)
+         number_dict["tnDetection"].append(trueNeg)
+         number_dict["fpDetection"].append(falsePos)
+         number_dict["fnDetection"].append(falseNeg)
+
          truePosDetection += truePos
          trueNegDetection += trueNeg
          falsePosDetection += falsePos
          falseNegDetection += falseNeg
-
+         print(f"Detection current: TP {truePos}, TN {trueNeg}, FP {falsePos}, FN {falseNeg} \n total: TP {truePosDetection}, TN {trueNegDetection}, FP {falsePosDetection}, FN {falseNegDetection}")
+         
          truePos,trueNeg,falsePos,falseNeg = calculateMetricsRepair(db,dirty,clean)
+         precisionRepair,recallRepair,F1scoreRepair = calculateF1Score(truePos,trueNeg,falsePos,falseNeg)
+         number_dict["precisionRepair"].append(precisionRepair)
+         number_dict["recallRepair"].append(recallRepair)
+         number_dict["fscoreRepair"].append(F1scoreRepair)
+         number_dict["tpRepair"].append(truePos)
+         number_dict["tnRepair"].append(trueNeg)
+         number_dict["fpRepair"].append(falsePos)
+         number_dict["fnRepair"].append(falseNeg)
+
          truePosRepair += truePos
          trueNegRepair += trueNeg
          falsePosRepair += falsePos
          falseNegRepair += falseNeg
+         print(f"Repair current: TP {truePos}, TN {trueNeg}, FP {falsePos}, FN {falseNeg} \n total: TP {truePosRepair}, TN {trueNegRepair}, FP {falsePosRepair}, FN {falseNegRepair}")
+         number_df = pandas.DataFrame(number_dict)
+         number_df.to_csv(f"./{saveName}.csv",mode="w+")
+   number_dict["folderName"].append("total")
+   number_dict["time"].append(time.time() - totalStartTime)      
    precisionDetection,recallDetection,F1scoreDetection = calculateF1Score(truePosDetection,trueNegDetection,falsePosDetection,falseNegDetection)
+   fireRate = (truePosDetection + falsePosDetection) / (truePosDetection+trueNegDetection+falsePosDetection+falseNegDetection)
    precisionRepair,recallRepair,F1scoreRepair = calculateF1Score(truePosRepair,trueNegRepair,falsePosRepair,falseNegRepair)
-   print(f"Detection: precision: {precisionDetection}, recall: {recallDetection}, F1-score: {F1scoreDetection} \nRepair: precision: {precisionRepair}, recall: {recallRepair}, F1-score: {F1scoreRepair}")      
+   print(f"Detection: precision: {precisionDetection}, recall: {recallDetection}, F1-score: {F1scoreDetection}, fire rate: {fireRate} \nRepair: precision: {precisionRepair}, recall: {recallRepair}, F1-score: {F1scoreRepair}")
+   number_dict["precisionDetection"].append(precisionDetection)
+   number_dict["recallDetection"].append(recallDetection)
+   number_dict["fscoreDetection"].append(F1scoreDetection)
+   number_dict["fireRate"].append(fireRate)
+   number_dict["precisionRepair"].append(precisionRepair)
+   number_dict["recallRepair"].append(recallRepair)
+   number_dict["fscoreRepair"].append(F1scoreRepair)
+   number_dict["tpDetection"].append(truePosDetection)
+   number_dict["tnDetection"].append(trueNegDetection)
+   number_dict["fpDetection"].append(falsePosDetection)
+   number_dict["fnDetection"].append(falseNegDetection)
+   number_dict["tpRepair"].append(truePosRepair)
+   number_dict["tnRepair"].append(trueNegRepair)
+   number_dict["fpRepair"].append(falsePosRepair)
+   number_dict["fnRepair"].append(falseNegRepair)
+   number_df = pandas.DataFrame(number_dict)
+   number_df.to_csv(f"./{saveName}.csv")
+
+
+################################################################################################################################################################
+# DataVinci Variants
+################################################################################################################################################################   
+
+def DataVinciNoLLM(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")   
+   print("feature dict constructed")
+   columnIndex = 0         
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepair(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1
+
+def DataVinciMultipleLLMPrompts(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   for columnName in data.columns:
+      columnMaskingWithLlmMultiplePrompts(data,columnName,10)
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("feature dict constructed")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepair(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1      
+
+def DataVinciNoLLMSingleTree(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("feature dict constructed")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepairSingleTree(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1          
+
+def DataVinciNoLLMRandomForest(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("feature dict constructed")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepairRandomForest(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1 
+
+def iterateOverSubfoldersSkipping(directory: str):
+   totalStartTime = time.time()
+   saveName = "DGovSkippingLLM"
+   #saveName = "DGovSkippingSingleTree"
+   #saveName = "DGovSkippingRandomForest"
+   try:
+      number_df = pandas.read_csv(f"./{saveName}.csv")
+      number_dict = number_df.to_dict('list')
+      number_dict.pop('Unnamed: 0',None)
+      print(number_dict)
+   except FileNotFoundError:
+      number_dict = {"folderName": [], "precisionDetection": [], "recallDetection": [], "fscoreDetection": [],"fireRate": [], "precisionRepair": [], "recallRepair": [], "fscoreRepair": [], "time": [], "tpDetection": [], "fpDetection": [], "fnDetection": [], "tnDetection": [],"tpRepair": [], "fpRepair": [], "fnRepair": [], "tnRepair": [], "skippedColumns": []}
+   truePosDetection,trueNegDetection,falsePosDetection,falseNegDetection = 0,0,0,0
+   truePosRepair,trueNegRepair,falsePosRepair,falseNegRepair = 0,0,0,0
+   for path,folders,files in os.walk(directory):               
+      for folder_name in folders:
+         if folder_name in number_dict["folderName"]:
+            print(f"skipping folder {folder_name} since its already in the dictionary")
+            continue
+         db_in =  pandas.read_csv(f"{path}/{folder_name}/dirty.csv")
+         clean = pandas.read_csv(f"{path}/{folder_name}/clean.csv").astype(str)
+         db_in.columns = clean.columns
+         db = db_in.astype(str)
+         dirty = db_in.astype(str)
+         if db.shape[0] > 150:
+            print(f"skipping {folder_name}")
+            number_dict["folderName"].append(folder_name)
+            number_dict["time"].append(0)
+            number_dict["precisionDetection"].append(0)
+            number_dict["recallDetection"].append(0)
+            number_dict["fscoreDetection"].append(0)
+            number_dict["fireRate"].append(0)
+            number_dict["tpDetection"].append(0)
+            number_dict["tnDetection"].append(0)
+            number_dict["fpDetection"].append(0)
+            number_dict["fnDetection"].append(0)
+            number_dict["precisionRepair"].append(0)
+            number_dict["recallRepair"].append(0)
+            number_dict["fscoreRepair"].append(0)
+            number_dict["tpRepair"].append(0)
+            number_dict["tnRepair"].append(0)
+            number_dict["fpRepair"].append(0)
+            number_dict["fnRepair"].append(0)
+            number_dict["skippedColumns"].append('')
+            continue
+         print(f"{folder_name}: \n dirty databas: {db}")
+         startTime = time.time()
+
+         skippedColumns = DataVinciSkipping(db)
+         #skippedColumns = DataVinciSkippingNoLLM(db)
+         #skippedColumns = DataVinciSkippingNoLLMRandomForest(db)
+         #skippedColumns = DataVinciSkippingNoLLMSingleTree(db)
+
+         number_dict["folderName"].append(folder_name)
+         number_dict["time"].append(time.time() - startTime)
+         truePos,trueNeg,falsePos,falseNeg = calculateMetricsDetectionSkipping(db,dirty,clean,skippedColumns)
+         precisionDetection,recallDetection,F1scoreDetection = calculateF1Score(truePos,trueNeg,falsePos,falseNeg)
+         fireRate = (truePos + falsePos) / (truePos+trueNeg+falsePos+falseNeg)
+         number_dict["precisionDetection"].append(precisionDetection)
+         number_dict["recallDetection"].append(recallDetection)
+         number_dict["fscoreDetection"].append(F1scoreDetection)
+         number_dict["fireRate"].append(fireRate)
+         number_dict["tpDetection"].append(truePos)
+         number_dict["tnDetection"].append(trueNeg)
+         number_dict["fpDetection"].append(falsePos)
+         number_dict["fnDetection"].append(falseNeg)
+
+         truePosDetection += truePos
+         trueNegDetection += trueNeg
+         falsePosDetection += falsePos
+         falseNegDetection += falseNeg
+         print(f"Detection current: TP {truePos}, TN {trueNeg}, FP {falsePos}, FN {falseNeg} \n total: TP {truePosDetection}, TN {trueNegDetection}, FP {falsePosDetection}, FN {falseNegDetection}")
+         
+         truePos,trueNeg,falsePos,falseNeg = calculateMetricsRepairSkipping(db,dirty,clean,skippedColumns)
+         precisionRepair,recallRepair,F1scoreRepair = calculateF1Score(truePos,trueNeg,falsePos,falseNeg)
+         number_dict["precisionRepair"].append(precisionRepair)
+         number_dict["recallRepair"].append(recallRepair)
+         number_dict["fscoreRepair"].append(F1scoreRepair)
+         number_dict["tpRepair"].append(truePos)
+         number_dict["tnRepair"].append(trueNeg)
+         number_dict["fpRepair"].append(falsePos)
+         number_dict["fnRepair"].append(falseNeg)
+
+         truePosRepair += truePos
+         trueNegRepair += trueNeg
+         falsePosRepair += falsePos
+         falseNegRepair += falseNeg
+         skipped = ''
+         if len(skippedColumns) > 0:
+            skipped = skippedColumns[0]
+            for i in range(1,len(skippedColumns)):
+               skipped +=  ';' + skippedColumns[i]  
+         number_dict["skippedColumns"].append(skipped)
+
+         print(f"Repair current: TP {truePos}, TN {trueNeg}, FP {falsePos}, FN {falseNeg} \n total: TP {truePosRepair}, TN {trueNegRepair}, FP {falsePosRepair}, FN {falseNegRepair}")
+         number_df = pandas.DataFrame(number_dict)
+         number_df.to_csv(f"./{saveName}.csv",mode="w+")
+   number_dict["folderName"].append("total")
+   number_dict["time"].append(time.time() - totalStartTime)      
+   precisionDetection,recallDetection,F1scoreDetection = calculateF1Score(truePosDetection,trueNegDetection,falsePosDetection,falseNegDetection)
+   fireRate = (truePosDetection + falsePosDetection) / (truePosDetection+trueNegDetection+falsePosDetection+falseNegDetection)
+   precisionRepair,recallRepair,F1scoreRepair = calculateF1Score(truePosRepair,trueNegRepair,falsePosRepair,falseNegRepair)
+   print(f"Detection: precision: {precisionDetection}, recall: {recallDetection}, F1-score: {F1scoreDetection}, fire rate: {fireRate} \nRepair: precision: {precisionRepair}, recall: {recallRepair}, F1-score: {F1scoreRepair}")
+   number_dict["precisionDetection"].append(precisionDetection)
+   number_dict["recallDetection"].append(recallDetection)
+   number_dict["fscoreDetection"].append(F1scoreDetection)
+   number_dict["fireRate"].append(fireRate)
+   number_dict["precisionRepair"].append(precisionRepair)
+   number_dict["recallRepair"].append(recallRepair)
+   number_dict["fscoreRepair"].append(F1scoreRepair)
+   number_dict["tpDetection"].append(truePosDetection)
+   number_dict["tnDetection"].append(trueNegDetection)
+   number_dict["fpDetection"].append(falsePosDetection)
+   number_dict["fnDetection"].append(falseNegDetection)
+   number_dict["tpRepair"].append(truePosRepair)
+   number_dict["tnRepair"].append(trueNegRepair)
+   number_dict["fpRepair"].append(falsePosRepair)
+   number_dict["fnRepair"].append(falseNegRepair)
+   number_dict["skippedColumns"].append('')
+   number_df = pandas.DataFrame(number_dict)
+   number_df.to_csv(f"./{saveName}.csv")
+
+def DataVinciSkipping(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   skippedColumns = []
+   for columnName in data.columns:
+      columnMaskingWithLLM(data,columnName)
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      for i in range(0,len(commonLengths[columnName])):
+         if commonLengths[columnName][i] > 15:
+            skippedColumns.append(columnName)
+            break      
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("generated feature Dict")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      if columnName in skippedColumns:
+         print(f"skipping column {columnName} for too long entries")
+         columnIndex += 1
+         continue
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepair(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1  
+   removeMasks(data)
+   return skippedColumns
+
+def DataVinciSkippingNoLLM(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   skippedColumns = []
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      for i in range(0,len(commonLengths[columnName])):
+         if commonLengths[columnName][i] > 15:
+            skippedColumns.append(columnName)
+            break      
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("generated feature Dict")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      if columnName in skippedColumns:
+         print(f"skipping column {columnName} for too long entries")
+         columnIndex += 1
+         continue
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepair(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1  
+   return skippedColumns
+
+def DataVinciSkippingNoLLMSingleTree(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   skippedColumns = []
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      for i in range(0,len(commonLengths[columnName])):
+         if commonLengths[columnName][i] > 15:
+            skippedColumns.append(columnName)
+            break      
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("generated feature Dict")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      if columnName in skippedColumns:
+         print(f"skipping column {columnName} for too long entries")
+         columnIndex += 1
+         continue
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepairSingleTree(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1  
+   return skippedColumns
+
+def DataVinciSkippingNoLLMRandomForest(data: pandas.DataFrame):
+   columnIndex = 0
+   errorMatrix = numpy.ones(data.shape)
+   stringConstants = {}
+   commonLengths = {}
+   featureDict = {}
+   patterns = {}
+   skippedColumns = []
+   for columnName in data.columns:
+      column = data[columnName]
+      columnDF = column.to_frame()
+      patterns[columnName] = getPatterns(column)
+      stringConstants[columnName] = generateStringConstantsOfColumn(data,columnName)
+      commonLengths[columnName] = getCommonLengths(data,columnName)
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         for pattern in patterns[columnName]:
+            if pattern.matches(entry):
+               errorMatrix[index, columnIndex] = 0
+               break
+      for i in range(0,len(commonLengths[columnName])):
+         if commonLengths[columnName][i] > 15:
+            skippedColumns.append(columnName)
+            break      
+      columnIndex += 1
+   print(f"patterns: {patterns}")
+   #print(f"stringConstants: {stringConstants} ,commonLengths: {commonLengths}")   
+   fillFeatureDict(data,featureDict,stringConstants,errorMatrix,commonLengths)
+   #print(f"feature dict: {featureDict}")
+   print("generated feature Dict")   
+   columnIndex = 0         
+   for columnName in data.columns:
+      if columnName in skippedColumns:
+         print(f"skipping column {columnName} for too long entries")
+         columnIndex += 1
+         continue
+      column = data[columnName]
+      columnDF = column.to_frame()         
+      for index,row in columnDF.iterrows():
+         entry = row[columnName]
+         if errorMatrix[index,columnIndex] == 1:
+            newEntry = chooseRepairRandomForest(data,patterns[columnName],entry,index,columnIndex,columnName,featureDict,errorMatrix,stringConstants[columnName],commonLengths[columnName])
+            data.at[index,columnName] = newEntry
+            print(f'found dirty entry {entry} at row {index} in column {columnName} and replaced it with {data.at[index,columnName]}')
+      columnIndex += 1  
+   return skippedColumns
+
+def columnMaskingWithLLMRequests(data: pandas.DataFrame, columnName: str):
+   dataShape = data.shape
+   column = data[columnName].to_frame()
+   columnString = ""
+   for index,row in column.iterrows():
+      if not index == 0:
+         columnString += ", "
+      entry = str(row[columnName])
+      columnString += entry
+
+   llmInput = LLM_QUESTION + columnString + QUESTION_END
+
+   inputData = {
+   "model": 
+   "llama3",
+   "prompt": 
+   llmInput,
+   }
+
+   response = requests.post(URL, data=json.dumps(inputData))
+   print(response)
+   answerString = response['message']['content']
+   print(f"LLM response: {response['message']['content']}")
+   answerStringLines = re.split('\n',answerString)
+   #print(f"LLM response split by linebreaks: {answerStringLines}")
+   for line in answerStringLines:
+      maskedValues = re.split(',',line)
+      #print(f"{line} after splitting on ,: {maskedValues}; lenght = {len(maskedValues)} , data shape = {dataShape[0]}")
+      if len(maskedValues) == dataShape[0]:
+         #print("replacing data")
+         for index,row in column.iterrows():
+            repair = maskedValues[index]
+            if index == 0: #First Value might have a prefix in front of it 
+               repair = re.sub('Data Column: ',"",repair)
+               repair = re.sub('Masked Column: ',"",repair)
+            if index + 1 == dataShape[0]: #Last value might have an extra ";"
+               repair = re.sub(';','',repair)
+            re.sub('^[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
+            data.at[index,columnName] = repair
+         break
+   #print(f"masked data: {data}")
+
+   # Calculates the precision, recall and F1_score of the repair based on the given result-, clean- and dirty-dataframe
+def calculateMetricsRepairSkipping(result: pandas.DataFrame, dirty: pandas.DataFrame, clean: pandas.DataFrame,skippedColumns):
+   truePos,trueNeg,falsePos,falseNeg = 0,0,0,0
+   for index,row in result.iterrows():
+      for column in result.columns:
+         if column in skippedColumns:
+            continue
+         #Entry was not changed correctly
+         if result.at[index,column] == dirty.at[index,column] and result.at[index,column] == clean.at[index,column]:
+            trueNeg += 1
+         #Entry should have been changed but wasn't   
+         elif result.at[index,column] == dirty.at[index,column] and not result.at[index,column] == clean.at[index,column]:
+            falseNeg += 1
+         #Entry was changed to the correct entry   
+         elif not result.at[index,column] == dirty.at[index,column] and result.at[index,column] == clean.at[index,column]:
+            truePos += 1
+         #Entry was changed but not to the correct entry   
+         elif not result.at[index,column] == dirty.at[index,column] and  not result.at[index,column] == clean.at[index,column]:
+            falsePos += 1 
+   return truePos,trueNeg,falsePos,falseNeg
+
+# Calculates the precision, recall and F1_score of the detection based on the given result-, clean- and dirty-dataframe
+def calculateMetricsDetectionSkipping(result: pandas.DataFrame, dirty: pandas.DataFrame, clean: pandas.DataFrame,skippedColumns):
+   truePos,trueNeg,falsePos,falseNeg = 0,0,0,0
+   for index,row in result.iterrows():
+      for column in result.columns:
+         if column in skippedColumns:
+            continue
+         #Entry was not changed correctly
+         if result.at[index,column] == dirty.at[index,column] and dirty.at[index,column] == clean.at[index,column]:
+            trueNeg += 1
+         #Entry should have been changed but wasn't   
+         elif result.at[index,column] == dirty.at[index,column] and not dirty.at[index,column] == clean.at[index,column]:
+            falseNeg += 1
+         #Entry was changed incorrecly   
+         elif not result.at[index,column] == dirty.at[index,column] and dirty.at[index,column] == clean.at[index,column]:
+            falsePos += 1
+         #Entry was changed correcly  
+         elif not result.at[index,column] == dirty.at[index,column] and  not dirty.at[index,column] == clean.at[index,column]:
+            truePos += 1
+   if truePos == 0:
+      precision,recall,F1_score = 0,0,0
+   else:            
+      precision =  truePos / (truePos + falsePos)
+      recall = truePos / (truePos + falseNeg)
+      F1_score = 2 * precision * recall / (precision + recall)  
+   return truePos,trueNeg,falsePos,falseNeg
+
+def calculateTotal():
+   #saveName = "fRahaDgov9"
+   #saveName = "BaranRahaDgov0"
+   #saveName = "DGovSkippingLLM"
+   saveName = "DGovSkippingSingleTree"
+   #saveName = "DGovSkippingRandomForest"
+   try:
+      number_df = pandas.read_csv(f"./{saveName}.csv")
+      number_dict = number_df.to_dict('list')
+      number_dict.pop('Unnamed: 0',None)
+      print(number_dict)
+   except FileNotFoundError:
+      number_dict = {"folderName": [], "precisionDetection": [], "recallDetection": [], "fscoreDetection": [],"fireRate": [], "precisionRepair": [], "recallRepair": [], "fscoreRepair": [], "time": [], "tpDetection": [], "fpDetection": [], "fnDetection": [], "tnDetection": [],"tpRepair": [], "fpRepair": [], "fnRepair": [], "tnRepair": [], "skippedColumns": []}
+   truePosDetection,trueNegDetection,falsePosDetection,falseNegDetection = 0,0,0,0
+   truePosRepair,trueNegRepair,falsePosRepair,falseNegRepair = 0,0,0,0
+   totalTime = 0
+   for i in range(0,len(number_dict["folderName"])):
+         folder = number_dict["folderName"][i]
+         print(f"processing folder {folder}")
+         truePosDetection += number_dict["tpDetection"][i]
+         trueNegDetection += number_dict["tnDetection"][i]
+         falsePosDetection += number_dict["fpDetection"][i]
+         falseNegDetection += number_dict["fnDetection"][i]
+
+         truePosRepair += number_dict["tpRepair"][i]
+         trueNegRepair += number_dict["tnRepair"][i]
+         falsePosRepair += number_dict["fpRepair"][i]
+         falseNegRepair += number_dict["fnRepair"][i]
+
+         totalTime += number_dict["time"][i]
+   number_dict["folderName"].append("total")
+   number_dict["time"].append(totalTime)      
+   precisionDetection,recallDetection,F1scoreDetection = calculateF1Score(truePosDetection,trueNegDetection,falsePosDetection,falseNegDetection)
+   fireRate = (truePosDetection + falsePosDetection) / (truePosDetection+trueNegDetection+falsePosDetection+falseNegDetection)
+   precisionRepair,recallRepair,F1scoreRepair = calculateF1Score(truePosRepair,trueNegRepair,falsePosRepair,falseNegRepair)
+   print("DataVinci performance on {}:\nDetection:\nPrecision = {:.2f}\nRecall = {:.2f}\nF1 = {:.2f}\nFireRate = {:.2f}\nRepair:\nPrecision = {:.2f}\nRecall = {:.2f}\nF1 = {:.2f}\nTime = {}".format(saveName, precisionDetection, recallDetection, F1scoreDetection,fireRate,precisionRepair,recallRepair,F1scoreRepair,totalTime))
+   print("DataVinci performance on {}:\nDetection:\nTrue Positive = {:.2f}\nFalse Positive = {:.2f}\nTrue Negatice= {:.2f}\nFalse Negatice= {:.2f}\nRepair:\nTrue Positive = {:.2f}\nFalse Positive = {:.2f}\nTrue Negatice= {:.2f}\nFalse Negatice= {:.2f}".format(saveName, truePosDetection, falsePosDetection,trueNegDetection,falseNegDetection,truePosRepair,falsePosRepair,trueNegRepair,falseNegRepair))
+   number_dict["precisionDetection"].append(precisionDetection)
+   number_dict["recallDetection"].append(recallDetection)
+   number_dict["fscoreDetection"].append(F1scoreDetection)
+   number_dict["fireRate"].append(fireRate)
+   number_dict["precisionRepair"].append(precisionRepair)
+   number_dict["recallRepair"].append(recallRepair)
+   number_dict["fscoreRepair"].append(F1scoreRepair)
+   number_dict["tpDetection"].append(truePosDetection)
+   number_dict["tnDetection"].append(trueNegDetection)
+   number_dict["fpDetection"].append(falsePosDetection)
+   number_dict["fnDetection"].append(falseNegDetection)
+   number_dict["tpRepair"].append(truePosRepair)
+   number_dict["tnRepair"].append(trueNegRepair)
+   number_dict["fpRepair"].append(falsePosRepair)
+   number_dict["fnRepair"].append(falseNegRepair)
+   number_dict["skippedColumns"].append('')
+   number_df = pandas.DataFrame(number_dict)
+   number_df.to_csv(f"./{saveName}.csv")
 
 if __name__ == "__main__":
    main()
-
 
