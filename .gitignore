@@ -10,11 +10,12 @@ LLM.py
 MasterArbeit Infos.txt
 nuget.exe
 Quintet.zip
-clean.csv
-dirty.csv
 test.csv
 QuintetNo.csv
 noLLMResult.csv
 LLMResultServer.csv
 LLMResult.csv
 example.csv
+small_example.csv
+example_clean.csv
+example_dirty.csv
