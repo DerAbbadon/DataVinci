@@ -32,12 +32,8 @@ fractionWeight = 0.2 #weigth of the fraction of the column matching the pattern 
 
 
 def main():
-   calculateTotal()
+   #calculateTotal()
    #iterateOverSubfoldersSkipping(DATABASE_PATH)
-   db_in =pandas.read_csv("dirty.csv")
-   db_in = db_in.astype(str)
-   db = db_in.astype(str)
-   #dirty = db_in.astype(str)
    '''
    examples = [
       "Ind-674-PRO",
@@ -91,15 +87,15 @@ def main():
    ]
    '''
    #example_db = pandas.DataFrame(examples_short,columns=['examples'])
-   #example_db =pandas.read_csv("example.csv").astype(str)
+   example_db =pandas.read_csv("small_example.csv").astype(str)
    #small_example_db = example_db['B'].to_frame()
    #columnMaskingWithLLM(db,'nlcsid')
    #columnMaskingWithLLMmultiplePrompts(db,'nlcsname',10)
 
-   #DataVinci(db)
-   #DataVinciNoLLM(db)
-   #DataVinciNoLLMRandomForest(db)
-   #DataVinciNoLLMSingleTree(db)
+   DataVinci(example_db)
+   #DataVinciNoLLM(example_db)
+   #DataVinciNoLLMRandomForest(example_db)
+   #DataVinciNoLLMSingleTree(example_db)
 
    #print(getMinimalEditDistance(example_db,'examples','Hamburg-2023'))
 
@@ -189,7 +185,7 @@ def generateCandidates(data: pandas.DataFrame, patterns, entry):
    candidates = []
    for pattern in patterns:
       newDags = generateDAG(str(pattern)[::-1],entry,[],0)
-      print(f"Dags generated: pattern: {pattern}, Dags: {newDags}")
+      #print(f"Dags generated: pattern: {pattern}, Dags: {newDags}")
       for dag in newDags:
          moves,costs = generateMatrices(dag,entry)
          fillMatrices(dag,entry,moves,costs)
@@ -468,13 +464,14 @@ def chooseRepair(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, co
          stringCandidate = candidateToString(candidate)
          rankedCandidates[stringCandidate] = cost
          candidatePatterns[stringCandidate] = pattern
-   heutisticRanker(data,columnName,rankedCandidates,entry,pattern)           
+   heutisticRanker(data,columnName,rankedCandidates,entry,candidatePatterns)           
    sortedRankedCandidates = sorted(rankedCandidates, key=rankedCandidates.get, reverse=False)     
    return sortedRankedCandidates[0]
 
 def chooseRepairSingleTree(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, columnIndex: int, columnName: str, featureDict: dict, errormatrix, stringConstants, commonLengths):
    candidates = generateCandidates(data,patterns,entry)
    rankedCandidates = {}
+   candidatePatterns = {}
    print("candidates ready for concretizing")
    for value in candidates:
       (candidate,pattern,cost) = value
@@ -499,16 +496,19 @@ def chooseRepairSingleTree(data: pandas.DataFrame, patterns, entry: str, rowInde
          #print(decodedLabel)
          concreteCandidate = concretizeCandidate(candidate,abstractEditIndices,decodedLabel[0])
          rankedCandidates[concreteCandidate] = cost
+         candidatePatterns[concreteCandidate] = pattern
       else:
          stringCandidate = candidateToString(candidate)
          rankedCandidates[stringCandidate] = cost
-   heutisticRanker(data,columnName,rankedCandidates,entry,pattern)           
+         candidatePatterns[stringCandidate] = pattern
+   heutisticRanker(data,columnName,rankedCandidates,entry,candidatePatterns)           
    sortedRankedCandidates = sorted(rankedCandidates, key=rankedCandidates.get, reverse=False)     
    return sortedRankedCandidates[0]
 
 def chooseRepairRandomForest(data: pandas.DataFrame, patterns, entry: str, rowIndex: int, columnIndex: int, columnName: str, featureDict: dict, errormatrix, stringConstants, commonLengths):
    candidates = generateCandidates(data,patterns,entry)
    rankedCandidates = {}
+   candidatePatterns = {}
    print("candidates ready for concretizing")
    for value in candidates:
       (candidate,pattern,cost) = value
@@ -533,10 +533,12 @@ def chooseRepairRandomForest(data: pandas.DataFrame, patterns, entry: str, rowIn
          #print(decodedLabel)
          concreteCandidate = concretizeCandidate(candidate,abstractEditIndices,decodedLabel[0])
          rankedCandidates[concreteCandidate] = cost
+         candidatePatterns[concreteCandidate] = pattern
       else:
          stringCandidate = candidateToString(candidate)
          rankedCandidates[stringCandidate] = cost
-   heutisticRanker(data,columnName,rankedCandidates,entry,pattern)           
+         candidatePatterns[stringCandidate] = pattern
+   heutisticRanker(data,columnName,rankedCandidates,entry,candidatePatterns)           
    sortedRankedCandidates = sorted(rankedCandidates, key=rankedCandidates.get, reverse=False)     
    return sortedRankedCandidates[0]
 
@@ -674,15 +676,16 @@ def generateFeaturVector(entry: str, columnName: str, errormatrix, string_consta
       featureVector.append(endsWith(entry,string))
    return featureVector   
 
-def heutisticRanker(data: pandas.DataFrame, columnName: str, repairCandidates: dict,  entry: str, pattern):
+def heutisticRanker(data: pandas.DataFrame, columnName: str, repairCandidates: dict,  entry: str, candidatePatterns):
    editDistances = {}
    countOperations= {}
    minimalDistances = {}
-   matchingFraction = pattern.matching_fraction
+   matchingFractions = {}
    for candidate in repairCandidates.keys():   
       editDistances[candidate] = Levenshtein.distance(candidate,entry)
       countOperations[candidate] = repairCandidates[candidate]
       minimalDistances[candidate] = getMinimalEditDistance(data,columnName,candidate)
+      matchingFractions[candidate] = candidatePatterns[candidate].matching_fraction
    #Normalizing first 3 properties
    minEditDistance = min(editDistances.values())
    maxEditDistance = max(editDistances.values())
@@ -690,18 +693,22 @@ def heutisticRanker(data: pandas.DataFrame, columnName: str, repairCandidates: d
    maxCount = max(countOperations.values())
    minMinDistance = min(minimalDistances.values())
    maxMinDistance = max(minimalDistances.values())
+   minFraction = min(matchingFractions.values())
+   maxFraction = max(matchingFractions.values())
    #If all the values are the same the normalization (x-min)/(max-min) = 0/0, which gives an error, so we correct the max to min + 1 to get 0/1
    if minEditDistance == maxEditDistance:
       maxEditDistance += 1
    if minCount == maxCount:
       maxCount += 1
    if minMinDistance == maxMinDistance:
-      maxMinDistance += 1      
+      maxMinDistance += 1
+   if minFraction == maxFraction:
+      maxFraction += 1         
 
    #print(f"dict: {editDistances} \n min: {minEditDistance}, max: {maxEditDistance}")
    for candidate in repairCandidates.keys():
       #print(f"weighted score: {levenshteinWeight} * ({editDistances[candidate]} - {minEditDistance}) / ({maxEditDistance} - {minEditDistance}) + {operationWeight} * ({countOperations[candidate]} - {minCount}) / ({maxCount} - {minCount}) + {closestNeighbourWeight} * ({minimalDistances[candidate]} - {minMinDistance}) / ({maxMinDistance} - {minMinDistance}) + {fractionWeight} * {matchingFraction}")   
-      repairCandidates[candidate] = levenshteinWeight * (editDistances[candidate] - minEditDistance) / (maxEditDistance - minEditDistance) + operationWeight * (countOperations[candidate] - minCount) / (maxCount - minCount) + closestNeighbourWeight * (minimalDistances[candidate] - minMinDistance) / (maxMinDistance - minMinDistance) + fractionWeight * matchingFraction
+      repairCandidates[candidate] = levenshteinWeight * (editDistances[candidate] - minEditDistance) / (maxEditDistance - minEditDistance) + operationWeight * (countOperations[candidate] - minCount) / (maxCount - minCount) + closestNeighbourWeight * (minimalDistances[candidate] - minMinDistance) / (maxMinDistance - minMinDistance) + fractionWeight * (matchingFractions[candidate] - minFraction) / (maxFraction - minFraction)
       
 
 
@@ -986,11 +993,12 @@ def columnMaskingWithLLM(data: pandas.DataFrame, columnName: str):
    foundCandidate = False
    for line in answerStringLines:
       maskedValues = re.split(',',line)
-      #print(f"{line} after splitting on ,: {maskedValues}; lenght = {len(maskedValues)} , data shape = {dataShape[0]}")
+      print(f"{line} after splitting on ,: {maskedValues}; lenght = {len(maskedValues)} , data shape = {dataShape[0]}")
       if len(maskedValues) == dataShape[0]:
          if foundCandidate and not re.search('Masked Column:',line):
             print(f"found candidate already and {line} does not contain the key words Masked Column")
             continue
+         print("masking data")
          for index,row in column.iterrows():
             repair = maskedValues[index]
             if index == 0: #First Value might have a prefix in front of it 
@@ -1001,7 +1009,7 @@ def columnMaskingWithLLM(data: pandas.DataFrame, columnName: str):
             re.sub('^[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
             data.at[index,columnName] = repair
          foundCandidate = True
-   #print(f"masked data: {data}")
+   print(f"masked data: {data}")
    #print(f"duration: {time.time() - startTime}")
 
 def columnMaskingWithLlmMultiplePrompts(data: pandas.DataFrame, columnName: str, maxLength: int):
@@ -1087,9 +1095,9 @@ def columnMaskingWithLlmMultiplePrompts(data: pandas.DataFrame, columnName: str,
                re.sub('[\s]*','',repair) # LLM might add whitespace after each ',' leading to each entry of the list, after the first, having extra whitespace at the front, which is removed here  
                data.at[startIndex + i,columnName] = repair
             foundCandidate = True       
-   #print(f"masked data:")
-   #for index,row in data.iterrows():
-      #print(row[columnName])
+   print(f"masked data:")
+   for index,row in data.iterrows():
+      print(row[columnName])
    #print(f"duration: {time.time() - startTime}")          
 
 def getMinimalEditDistance(data: pandas.DataFrame, columnName: str, entry: str):
